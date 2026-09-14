@@ -57,40 +57,40 @@ const DEFAULT_DAILY = [
     name: "🧺 洗濯終了後", 
     tasks: ["洗濯物を取り出す", "畳む", "フィルターのホコリを取る"] 
   },
-  {
-    id: "before_sleep",
-    name: "🛌 寝る前",
-    tasks: ["薬をのむ", "爪にオイル塗る"]
+  { 
+    id: "before_sleep", 
+    name: "🛌 寝る前", 
+    tasks: ["薬をのむ", "爪にオイル塗る"] 
   }
 ];
 
 const DEFAULT_OCCASIONAL = [
-  { id: "occ_1", title: "美容室予約", completed: false, completedAt: null, lastDoneDate: null },
-  { id: "occ_2", title: "まつげパーマ予約", completed: false, completedAt: null, lastDoneDate: null },
-  { id: "occ_3", title: "歯医者予約", completed: false, completedAt: null, lastDoneDate: null },
-  { id: "occ_nail", title: "セルフネイル", completed: false, completedAt: null, lastDoneDate: null, memo: "", allowMemo: true },
-  { id: "occ_4", title: "タブレット充電", completed: false, completedAt: null, lastDoneDate: null },
-  { id: "occ_5", title: "イヤホン充電", completed: false, completedAt: null, lastDoneDate: null },
-  { id: "occ_6", title: "スピーカー充電", completed: false, completedAt: null, lastDoneDate: null },
-  { id: "occ_7", title: "美顔器充電", completed: false, completedAt: null, lastDoneDate: null },
-  { id: "occ_8", title: "大きめの掃除", completed: false, completedAt: null, lastDoneDate: null, memo: "", allowMemo: true },
-  { id: "occ_9", title: "捨て活", completed: false, completedAt: null, lastDoneDate: null, memo: "", allowMemo: true }
+  { id: "occ_1", title: "美容室予約", completed: false, completedAt: null, lastDoneDate: null, prevDoneDate: null, prevMemo: "" },
+  { id: "occ_2", title: "まつげパーマ予約", completed: false, completedAt: null, lastDoneDate: null, prevDoneDate: null, prevMemo: "" },
+  { id: "occ_3", title: "歯医者予約", completed: false, completedAt: null, lastDoneDate: null, prevDoneDate: null, prevMemo: "" },
+  { id: "occ_nail", title: "セルフネイル", completed: false, completedAt: null, lastDoneDate: null, memo: "", allowMemo: true, prevDoneDate: null, prevMemo: "" },
+  { id: "occ_4", title: "タブレット充電", completed: false, completedAt: null, lastDoneDate: null, prevDoneDate: null, prevMemo: "" },
+  { id: "occ_5", title: "イヤホン充電", completed: false, completedAt: null, lastDoneDate: null, prevDoneDate: null, prevMemo: "" },
+  { id: "occ_6", title: "スピーカー充電", completed: false, completedAt: null, lastDoneDate: null, prevDoneDate: null, prevMemo: "" },
+  { id: "occ_7", title: "美顔器充電", completed: false, completedAt: null, lastDoneDate: null, prevDoneDate: null, prevMemo: "" },
+  { id: "occ_8", title: "大きめの掃除", completed: false, completedAt: null, lastDoneDate: null, memo: "", allowMemo: true, prevDoneDate: null, prevMemo: "" },
+  { id: "occ_9", title: "捨て活", completed: false, completedAt: null, lastDoneDate: null, memo: "", allowMemo: true, prevDoneDate: null, prevMemo: "" }
 ];
 
 const DEFAULT_ROUTINES = [
-  { id: "rt_nail", title: "セルフネイル付け替え", intervalDays: 14, lastDone: null, memo: "", allowMemo: true, deadline: null },
-  { id: "rt_hair", title: "美容室", intervalDays: 60, lastDone: null, memo: "", allowMemo: true, deadline: null },
-  { id: "rt_dental", title: "歯医者でクリーニング", intervalDays: 90, lastDone: null, memo: "", allowMemo: true, deadline: null },
-  { id: "rt_lash", title: "まつ毛パーマ", intervalDays: 30, lastDone: null, memo: "", allowMemo: true, deadline: null },
-  { id: "rt_earphone", title: "イヤホン充電", intervalDays: 3, lastDone: null, deadline: null },
-  { id: "rt_speaker", title: "スピーカー充電", intervalDays: 7, lastDone: null, deadline: null },
-  { id: "rt_filter", title: "換気扇フィルター掃除", intervalDays: 30, lastDone: null, memo: "", allowMemo: true, deadline: null },
-  { id: "rt_blood", title: "千歳烏山で血液検査", intervalDays: 90, lastDone: null, memo: "", allowMemo: true, deadline: null },
-  { id: "rt_thyroid", title: "伊東病院で甲状腺検査", intervalDays: 180, lastDone: null, memo: "", allowMemo: true, deadline: null },
-  { id: "rt_checkup", title: "港区健康診断", intervalDays: 365, lastDone: null, memo: "", allowMemo: true, deadline: null }
+  { id: "rt_nail", title: "セルフネイル付け替え", intervalDays: 21, lastDone: null, memo: "", allowMemo: true, deadline: null, prevDone: null, prevMemo: "" },
+  { id: "rt_hair", title: "美容室", intervalDays: 30, lastDone: null, memo: "", allowMemo: true, deadline: null, prevDone: null, prevMemo: "" },
+  { id: "rt_dental", title: "歯医者でクリーニング", intervalDays: 60, lastDone: null, memo: "", allowMemo: true, deadline: null, prevDone: null, prevMemo: "" },
+  { id: "rt_lash", title: "まつ毛パーマ", intervalDays: 30, lastDone: null, memo: "", allowMemo: true, deadline: null, prevDone: null, prevMemo: "" },
+  { id: "rt_earphone", title: "イヤホン充電", intervalDays: 3, lastDone: null, deadline: null, prevDone: null, prevMemo: "" },
+  { id: "rt_speaker", title: "スピーカー充電", intervalDays: 7, lastDone: null, deadline: null, prevDone: null, prevMemo: "" },
+  { id: "rt_filter", title: "換気扇フィルター掃除", intervalDays: 30, lastDone: null, memo: "", allowMemo: true, deadline: null, prevDone: null, prevMemo: "" },
+  { id: "rt_blood", title: "千歳烏山で血液検査", intervalDays: 90, lastDone: null, memo: "", allowMemo: true, deadline: null, prevDone: null, prevMemo: "" },
+  { id: "rt_thyroid", title: "伊東病院で甲状腺検査", intervalDays: 180, lastDone: null, memo: "", allowMemo: true, deadline: null, prevDone: null, prevMemo: "" },
+  { id: "rt_checkup", title: "港区健康診断", intervalDays: 365, lastDone: null, memo: "", allowMemo: true, deadline: null, prevDone: null, prevMemo: "" }
 ];
 
-const STORAGE_KEY = "LIFE_OS_DATA_V37_CLEAN_HEADER";
+const STORAGE_KEY = "LIFE_OS_DATA_V41_CUSTOM_CLEAN";
 let state = {
   currentTab: "today",
   viewDateStr: "",
@@ -134,7 +134,6 @@ function getHolidayName(y, m, d, day) {
   return "";
 }
 
-// 🌟 「今日 / きのう / あした」ラベル判定 & 改行しない1行中央揃え
 function getFormattedDateHero(targetDateStr) {
   const [y, m, d] = targetDateStr.split('-').map(Number);
   const targetDate = new Date(y, m - 1, d);
@@ -249,8 +248,11 @@ function loadState() {
       }
     });
     DEFAULT_ROUTINES.forEach(defItem => {
-      if (!state.routines.some(r => r.id === defItem.id || r.title === defItem.title)) {
+      const existing = state.routines.find(r => r.id === defItem.id);
+      if (!existing) {
         state.routines.push(defItem);
+      } else if (["rt_nail", "rt_hair", "rt_dental", "rt_lash"].includes(defItem.id)) {
+        existing.intervalDays = defItem.intervalDays;
       }
     });
   }
@@ -356,8 +358,8 @@ window.closeDoneModal = function(e) {
   if (overlay) overlay.classList.remove("active");
 };
 
+// --- カレンダーピッカー制御（日付クリア対応） ---
 let datePickerTarget = null;
-
 window.openDatePickerModal = function(type, id, currentVal) {
   datePickerTarget = { type, id };
   const overlay = document.getElementById("datepicker-modal-overlay");
@@ -372,10 +374,16 @@ window.openDatePickerModal = function(type, id, currentVal) {
     clearBtn.style.display = "none";
   } else if (type === 'routineDeadline') {
     title.textContent = "⏰ 締め切り日をカレンダーで指定";
+    clearBtn.textContent = "期限を解除する";
     clearBtn.style.display = "block";
-  } else {
+  } else if (type === 'routineDone') {
     title.textContent = "📅 実施日をカレンダーで指定";
-    clearBtn.style.display = "none";
+    clearBtn.textContent = "実施日を解除する（未実施に戻す）";
+    clearBtn.style.display = "block";
+  } else if (type === 'occDone') {
+    title.textContent = "📅 実施日をカレンダーで指定";
+    clearBtn.textContent = "実施日を解除する（未実施に戻す）";
+    clearBtn.style.display = "block";
   }
   overlay.classList.add("active");
 };
@@ -419,10 +427,67 @@ window.clearDatePickerSelection = function() {
   if (type === 'routineDeadline') {
     const item = state.routines.find(r => r.id === id);
     if (item) item.deadline = null;
+  } else if (type === 'routineDone') {
+    const item = state.routines.find(r => r.id === id);
+    if (item) item.lastDone = null;
+  } else if (type === 'occDone') {
+    const item = state.occasional.find(o => o.id === id);
+    if (item) item.lastDoneDate = null;
+  }
+  saveState();
+  render();
+  closeDatePickerModal();
+};
+
+// --- 周期スロット＋直入力モーダル制御 ---
+let intervalEditTargetId = null;
+window.openIntervalModal = function(id) {
+  intervalEditTargetId = id;
+  const item = state.routines.find(r => r.id === id);
+  if (!item) return;
+
+  const overlay = document.getElementById("interval-modal-overlay");
+  const input = document.getElementById("interval-modal-input");
+  const title = document.getElementById("interval-modal-title");
+  if (!overlay || !input) return;
+
+  title.textContent = `🔄「${item.title}」の周期設定`;
+  input.value = item.intervalDays || 14;
+  overlay.classList.add("active");
+};
+
+window.closeIntervalModal = function() {
+  const overlay = document.getElementById("interval-modal-overlay");
+  if (overlay) overlay.classList.remove("active");
+  intervalEditTargetId = null;
+};
+
+window.setIntervalFromSlot = function(days) {
+  if (!intervalEditTargetId) return;
+  const item = state.routines.find(r => r.id === intervalEditTargetId);
+  if (item) {
+    item.intervalDays = parseInt(days, 10);
     saveState();
     render();
   }
-  closeDatePickerModal();
+  closeIntervalModal();
+};
+
+window.applyIntervalCustom = function() {
+  if (!intervalEditTargetId) return;
+  const input = document.getElementById("interval-modal-input");
+  const val = input ? input.value.trim() : "";
+  if (val && !isNaN(val) && Number(val) > 0) {
+    const item = state.routines.find(r => r.id === intervalEditTargetId);
+    if (item) {
+      item.intervalDays = parseInt(val, 10);
+      saveState();
+      render();
+    }
+    closeIntervalModal();
+  } else {
+    alert("1以上の正しい日数を入力してください");
+  }
 };
 
 window.toggleHistoryDate = function(dateStr) {
@@ -478,20 +543,44 @@ window.onDiaryInput = val => {
   saveState();
 };
 
-window.toggleOccasional = function(id) {
+// --- 長押しタイマー制御 & 解除時に元データ復元 ---
+let longPressTimer = null;
+let longPressFired = false;
+
+window.startOccasionalPress = function(id) {
+  longPressFired = false;
+  longPressTimer = setTimeout(() => {
+    longPressFired = true;
+    executeToggleOccasional(id);
+  }, 600);
+};
+
+window.cancelOccasionalPress = function() {
+  if (longPressTimer) {
+    clearTimeout(longPressTimer);
+    longPressTimer = null;
+  }
+};
+
+function executeToggleOccasional(id) {
   const item = state.occasional.find(o => o.id === id);
   if (!item) return;
 
   if (item.completed) {
-    const ok = confirm("完了を取り消しますか？");
-    if (!ok) return;
     item.completed = false;
     item.completedAt = null;
+    item.lastDoneDate = item.prevDoneDate !== undefined ? item.prevDoneDate : item.lastDoneDate;
+    item.memo = item.prevMemo !== undefined ? item.prevMemo : item.memo;
+    if (navigator.vibrate) navigator.vibrate(50);
   } else {
+    item.prevDoneDate = item.lastDoneDate;
+    item.prevMemo = item.memo || "";
+
     item.completed = true;
     const today = getTodayString();
     item.completedAt = `${today} ${getCurrentTimeStr()}`;
     item.lastDoneDate = today;
+
     if (item.allowMemo) {
       const m = prompt(`「${item.title}」のメモ（空欄OK）:`, item.memo || "");
       if (m !== null) item.memo = m.trim();
@@ -500,7 +589,7 @@ window.toggleOccasional = function(id) {
   }
   saveState(); 
   render();
-};
+}
 
 window.editOccasionalMemo = function(id) {
   const item = state.occasional.find(o => o.id === id);
@@ -512,6 +601,12 @@ window.editOccasionalMemo = function(id) {
 window.doneRoutine = function(id) {
   const item = state.routines.find(r => r.id === id);
   if (!item) return;
+  const ok = confirm(`「${item.title}」を実施完了にしますか？`);
+  if (!ok) return;
+
+  item.prevDone = item.lastDone;
+  item.prevMemo = item.memo || "";
+
   item.lastDone = getTodayString();
   if (item.allowMemo) {
     const m = prompt(`「${item.title}」のメモ（例: デザイン、検査結果など）:`, item.memo || "");
@@ -527,11 +622,29 @@ window.editRoutineMemo = function(id) {
   if (m !== null) { item.memo = m.trim(); saveState(); render(); }
 };
 
-window.editRoutineInterval = function(id) {
-  const item = state.routines.find(r => r.id === id);
-  if (!item) return;
-  const val = prompt(`「${item.title}」の周期日数:`, item.intervalDays);
-  if (val && !isNaN(val) && Number(val) > 0) { item.intervalDays = parseInt(val, 10); saveState(); render(); }
+window.addCleaningTask = function() {
+  const input = document.getElementById("clean-add-input");
+  const val = input ? input.value.trim() : "";
+  if (!val) return alert("タスク名を入力してください");
+  
+  const cleanCat = state.categories.find(c => c.id === "cleaning");
+  if (cleanCat) {
+    cleanCat.tasks.push({ id: "t_clean_" + Date.now(), title: val });
+    saveState();
+    if (input) input.value = "";
+    render();
+  }
+};
+
+window.deleteCleaningTask = function(tId) {
+  if (!confirm("この項目を削除しますか？")) return;
+  const cleanCat = state.categories.find(c => c.id === "cleaning");
+  if (cleanCat) {
+    cleanCat.tasks = cleanCat.tasks.filter(t => t.id !== tId);
+    delete state.todayLog[tId];
+    saveState();
+    render();
+  }
 };
 
 window.addNewDailyTask = function() {
@@ -548,10 +661,33 @@ window.deleteDailyTask = function(cId, tId) {
   if (cat) { cat.tasks = cat.tasks.filter(t => t.id !== tId); delete state.todayLog[tId]; saveState(); render(); }
 };
 
-window.resetAll = function() {
-  if (confirm("全データを初期化しますか？")) {
-    try { localStorage.removeItem(STORAGE_KEY); } catch(e){}
-    loadState(); render();
+window.exportData = function() {
+  const dataStr = JSON.stringify(state, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `life_os_backup_${getTodayString()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+window.importData = function() {
+  const inputVal = document.getElementById("import-text-area")?.value.trim();
+  if (!inputVal) return alert("インポートするJSONテキストを貼り付けてください。");
+  try {
+    const parsed = JSON.parse(inputVal);
+    if (!parsed.categories || !parsed.todayDateStr) {
+      return alert("データ形式が正しくありません。");
+    }
+    if (confirm("現在のデータを上書きして復元しますか？")) {
+      state = parsed;
+      saveState();
+      render();
+      alert("データを正常に復元しました！🎉");
+    }
+  } catch (e) {
+    alert("JSONの読み込みに失敗しました。正しいデータを貼り付けてください。");
   }
 };
 
@@ -567,13 +703,19 @@ window.silentSyncToSpreadsheet = async function() {
   if (!url) return;
   const rows = [];
   const today = getTodayString();
+  
   state.categories.forEach(cat => cat.tasks.forEach(t => {
-    if (state.todayLog[t.id]) rows.push({ date: today, type: "今日のタスク", title: `[${cat.name}] ${t.title}`, detail: state.todayLog[t.id] });
+    if (state.todayLog[t.id]) {
+      rows.push({ date: today, type: "今日のタスク", title: `[${cat.name}] ${t.title}`, detail: state.todayLog[t.id] });
+    }
   }));
+  
   let done = 0;
   state.categories.forEach(c => c.tasks.forEach(t => { if (state.todayLog[t.id]) done++; }));
   rows.push({ date: today, type: "日次サマリー", title: "本日の達成状況", detail: `${done}個完了` });
-  if (state.todayDiary?.trim()) rows.push({ date: today, type: "今日の日記・メモ", title: "ひとこと記録", detail: state.todayDiary.trim() });
+  if (state.todayDiary?.trim()) {
+    rows.push({ date: today, type: "今日の日記・メモ", title: "ひとこと記録", detail: state.todayDiary.trim() });
+  }
 
   try {
     await fetch(url, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ rows }) });
@@ -668,9 +810,21 @@ function render() {
     </div>`;
     c.innerHTML = h;
 
+  // --- 🧹 掃除・空き時間（フリー項目追加UI） ---
   } else if (tab === "freetime") {
     const cleanCat = state.categories.find(c => c.id === "cleaning");
     let h = `<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">🧹 掃除・空き時間タスク</h2>`;
+    
+    h += `
+      <div class="status-card" style="margin-bottom:14px; padding:14px;">
+        <div style="font-size:1rem; font-weight:800; margin-bottom:6px;">➕ 新しい項目をすぐ追加</div>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="clean-add-input" class="form-control" placeholder="例: クローゼットの整理..." style="padding:10px; font-size:1.05rem;">
+          <button class="submit-btn" style="width:auto; padding:10px 18px; white-space:nowrap;" onclick="addCleaningTask()">追加</button>
+        </div>
+      </div>
+    `;
+
     if (cleanCat) {
       h += `
         <div class="category-group">
@@ -685,20 +839,21 @@ function render() {
         h += `
           <div class="task-item ${isDone ? 'checked' : ''}" onclick="toggleTask('${t.id}')">
             <div class="task-checkbox">${isDone ? '✔' : ''}</div>
-            <div class="task-title">${t.title}</div>
+            <div class="task-title">
+              ${t.title}
+              <div style="margin-top:4px;">
+                <button class="action-btn undo" style="padding:2px 8px; font-size:0.75rem; color:#ff4757;" onclick="event.stopPropagation(); deleteCleaningTask('${t.id}')">削除</button>
+              </div>
+            </div>
             <div class="task-time">${state.todayLog[t.id] || ''}</div>
           </div>
         `;
       });
       h += `</div></div>`;
     }
-    h += `<div class="status-card" style="margin-top:14px;">
-      <div style="font-size:1.05rem; color:var(--text-sub); line-height:1.5;">
-        💡 空き時間のインプット（新しい音楽・映像・リサーチ）や掃除・不用品整理を気軽にこなしてチェックしましょう！
-      </div>
-    </div>`;
     c.innerHTML = h;
 
+  // --- 💡 たまに ---
   } else if (tab === "occasional") {
     let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">💡 たまにやるタスク</h2>';
     const now = new Date(getTodayString());
@@ -708,19 +863,38 @@ function render() {
         const diff = Math.floor((now - new Date(item.lastDoneDate)) / 86400000);
         info = `${item.lastDoneDate} (${diff}日前)`;
       }
-      h += `<div class="item-card"><div class="item-card-row">
-        <div class="item-info"><div style="font-weight:800; font-size:1.15rem; ${item.completed ? 'text-decoration:line-through; opacity:0.6;' : ''}">${item.title}</div>
-        <div style="font-size:0.92rem; color:var(--text-sub); margin-top:4px;">前回：${info}</div>
-        ${item.completedAt ? `<div style="font-size:0.88rem; color:var(--primary); margin-top:2px;">今回完了: ${item.completedAt}</div>` : ''}</div>
-        <div class="item-actions">
-          <button class="action-btn undo" style="padding:6px 10px; font-size:0.88rem;" onclick="openDatePickerModal('occDone', '${item.id}', '${item.lastDoneDate || ''}')">📅 日付</button>
-          ${item.allowMemo ? `<button class="action-btn undo" style="padding:6px 10px; font-size:0.88rem;" onclick="editOccasionalMemo('${item.id}')">📝</button>` : ''}
-          <button class="${item.completed ? 'action-btn undo' : 'action-btn'}" onclick="toggleOccasional('${item.id}')">${item.completed ? '戻す' : '完了'}</button>
+
+      const pressHandlers = `
+        onpointerdown="startOccasionalPress('${item.id}')"
+        onpointerup="cancelOccasionalPress()"
+        onpointerleave="cancelOccasionalPress()"
+        onpointercancel="cancelOccasionalPress()"
+        onclick="if(!longPressFired){ alert('長押し（0.6秒）で完了・解除できます✨'); }"
+      `;
+
+      h += `
+        <div class="item-card">
+          <div class="item-card-row">
+            <div class="item-info">
+              <div style="font-weight:800; font-size:1.15rem; ${item.completed ? 'text-decoration:line-through; opacity:0.6;' : ''}">${item.title}</div>
+              <div style="font-size:0.92rem; color:var(--text-sub); margin-top:4px;">前回：${info}</div>
+              ${item.completedAt ? `<div style="font-size:0.88rem; color:var(--primary); margin-top:2px;">今回完了: ${item.completedAt}</div>` : ''}
+            </div>
+            <div class="item-actions">
+              <button class="action-btn undo" style="padding:6px 10px; font-size:0.88rem;" onclick="openDatePickerModal('occDone', '${item.id}', '${item.lastDoneDate || ''}')">📅 日付</button>
+              ${item.allowMemo ? `<button class="action-btn undo" style="padding:6px 10px; font-size:0.88rem;" onclick="editOccasionalMemo('${item.id}')">📝</button>` : ''}
+              <button class="${item.completed ? 'action-btn undo press-target' : 'action-btn press-target'}" ${pressHandlers}>
+                ${item.completed ? '戻す(長押し)' : '完了(長押し)'}
+              </button>
+            </div>
+          </div>
+          ${item.memo ? `<div style="font-size:0.95rem; background:#f8f9fa; padding:8px 10px; border-radius:10px; color:var(--text); word-break:break-all;">📝 ${item.memo}</div>` : ''}
         </div>
-      </div>${item.memo ? `<div style="font-size:0.95rem; background:#f8f9fa; padding:8px 10px; border-radius:10px; color:var(--text); word-break:break-all;">📝 ${item.memo}</div>` : ''}</div>`;
+      `;
     });
     c.innerHTML = h;
 
+  // --- 🔄 定期 ---
   } else if (tab === "routine") {
     let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">🔄 定期メンテナンス</h2>';
     const now = new Date(getTodayString());
@@ -729,30 +903,37 @@ function render() {
       let intervalBadge = "";
 
       if (item.lastDone) {
-        const diff = Math.floor((now - new Date(item.lastDone)) / 86400000);
+        const lastDoneDate = new Date(item.lastDone);
+        const diff = Math.floor((now - lastDoneDate) / 86400000);
         daysAgoText = `${item.lastDone} (${diff}日前)`;
         const left = item.intervalDays - diff;
 
+        const nextDateObj = new Date(lastDoneDate);
+        nextDateObj.setDate(nextDateObj.getDate() + item.intervalDays);
+        const nextM = nextDateObj.getMonth() + 1;
+        const nextD = nextDateObj.getDate();
+        const nextDateDisplay = `${nextM}月${nextD}日`;
+
         if (left > 0) {
-          intervalBadge = `<span style="color:#0984e3; font-weight:800; background:#e8f4fd; padding:3px 8px; border-radius:6px; display:inline-block;">🟢 周期目安: あと ${left}日 (${item.intervalDays}日ごと)</span>`;
+          intervalBadge = `<span style="color:#0984e3; font-weight:800; background:#e8f4fd; padding:4px 9px; border-radius:8px; display:inline-block; line-height:1.4;">🟢 次回予定: ${nextDateDisplay} (あと${left}日 / ${item.intervalDays}日ごと)</span>`;
         } else if (left === 0) {
-          intervalBadge = `<span style="color:#d63031; font-weight:800; background:#ffebeb; padding:3px 8px; border-radius:6px; display:inline-block;">⚠️ 周期目安: 今日が予定日！ (${item.intervalDays}日ごと)</span>`;
+          intervalBadge = `<span style="color:#d63031; font-weight:800; background:#ffebeb; padding:4px 9px; border-radius:8px; display:inline-block; line-height:1.4;">⚠️ 次回予定: 今日が予定日！ (${nextDateDisplay} / ${item.intervalDays}日ごと)</span>`;
         } else {
-          intervalBadge = `<span style="color:#d63031; font-weight:800; background:#ffebeb; padding:3px 8px; border-radius:6px; display:inline-block;">🚨 周期超過: ${Math.abs(left)}日遅れ (今すぐ！)</span>`;
+          intervalBadge = `<span style="color:#d63031; font-weight:800; background:#ffebeb; padding:4px 9px; border-radius:8px; display:inline-block; line-height:1.4;">🚨 予定日超過: ${nextDateDisplay} (${Math.abs(left)}日遅れ・今すぐ！)</span>`;
         }
       } else {
-        intervalBadge = `<span style="color:var(--text-sub); font-weight:700; background:#f1f2f6; padding:3px 8px; border-radius:6px; display:inline-block;">目安: ${item.intervalDays}日ごと (未実施)</span>`;
+        intervalBadge = `<span style="color:var(--text-sub); font-weight:700; background:#f1f2f6; padding:4px 9px; border-radius:8px; display:inline-block;">目安: ${item.intervalDays}日ごと (未実施)</span>`;
       }
 
       let deadlineInfo = "";
       if (item.deadline) {
         const dlDiff = Math.ceil((new Date(item.deadline) - now) / 86400000);
         if (dlDiff < 0) {
-          deadlineInfo = `<span style="color:#e02424; font-weight:800; background:#ffebeb; padding:3px 8px; border-radius:6px;">🚨 期限日超過 (${Math.abs(dlDiff)}日遅れ / ${item.deadline})</span>`;
+          deadlineInfo = `<span style="color:#e02424; font-weight:800; background:#ffebeb; padding:4px 9px; border-radius:8px;">🚨 期限超過 (${Math.abs(dlDiff)}日遅れ / ${item.deadline})</span>`;
         } else if (dlDiff === 0) {
-          deadlineInfo = `<span style="color:#e02424; font-weight:800; background:#fff3cd; padding:3px 8px; border-radius:6px;">⚠️ 今日が締め切り！ (${item.deadline})</span>`;
+          deadlineInfo = `<span style="color:#e02424; font-weight:800; background:#fff3cd; padding:4px 9px; border-radius:8px;">⚠️ 今日が締め切り！ (${item.deadline})</span>`;
         } else {
-          deadlineInfo = `<span style="color:#d97706; font-weight:800; background:#fffbeb; padding:3px 8px; border-radius:6px;">⏰ 期限日: ${item.deadline} (あと${dlDiff}日)</span>`;
+          deadlineInfo = `<span style="color:#d97706; font-weight:800; background:#fffbeb; padding:4px 9px; border-radius:8px;">⏰ 期限日: ${item.deadline} (あと${dlDiff}日)</span>`;
         }
       }
 
@@ -773,7 +954,7 @@ function render() {
                 <button class="action-btn undo" style="padding:4px 7px; font-size:0.8rem;" onclick="openDatePickerModal('routineDone', '${item.id}', '${item.lastDone || ''}')">📅 日付</button>
                 <button class="action-btn undo" style="padding:4px 7px; font-size:0.8rem;" onclick="openDatePickerModal('routineDeadline', '${item.id}', '${item.deadline || ''}')">⏰ 期限</button>
                 ${item.allowMemo ? `<button class="action-btn undo" style="padding:4px 7px; font-size:0.8rem;" onclick="editRoutineMemo('${item.id}')">メモ</button>` : ''}
-                <button class="action-btn undo" style="padding:4px 7px; font-size:0.8rem;" onclick="editRoutineInterval('${item.id}')">周期</button>
+                <button class="action-btn undo" style="padding:4px 7px; font-size:0.8rem;" onclick="openIntervalModal('${item.id}')">周期</button>
               </div>
             </div>
           </div>
@@ -783,6 +964,7 @@ function render() {
     });
     c.innerHTML = h;
 
+  // --- 📋 全部 ---
   } else if (tab === "all") {
     let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">📋 毎日のタスク</h2>';
     state.categories.forEach(cat => {
@@ -794,6 +976,7 @@ function render() {
     });
     c.innerHTML = h;
 
+  // --- ➕ 追加 ---
   } else if (tab === "add") {
     c.innerHTML = `<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">➕ タスク追加</h2>
       <div class="status-card">
@@ -802,6 +985,7 @@ function render() {
         <button class="submit-btn" onclick="addNewDailyTask()">追加する</button>
       </div>`;
 
+  // --- 📊 履歴 ---
   } else if (tab === "history") {
     const wStats = getStatsSummary(7);
     const mStats = getStatsSummary(30);
@@ -887,18 +1071,32 @@ function render() {
     }
     c.innerHTML = h;
 
+  // --- ⚙️ 設定 ---
   } else if (tab === "settings") {
-    c.innerHTML = `<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">⚙️ 設定</h2>
+    c.innerHTML = `
+      <h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">⚙️ 設定</h2>
+      
       <div class="status-card">
         <h3 style="font-size:1.15rem; margin-bottom:10px;">📊 Googleスプレッドシート連携</h3>
         <p style="font-size:0.95rem; color:var(--text-sub); margin-bottom:12px; line-height:1.4;">
-          タスク完了時・日付変更時にバックグラウンドで自動同期されます（手動送信も可能です）。
+          同日・同タスクは重複せず最新データに自動上書き更新されます。
         </p>
         <input type="text" id="gas-url-input" class="form-control" placeholder="https://script.google.com/macros/s/.../exec" value="${localStorage.getItem("GAS_WEBAPP_URL") || ""}" style="margin-bottom:10px;">
         <button class="submit-btn" style="margin-bottom:10px;" onclick="saveGasUrl()">URLを保存</button>
         <button class="submit-btn" style="background:var(--primary);" onclick="syncToSpreadsheet()">今すぐ手動で送信 📤</button>
       </div>
-      <div class="status-card" style="margin-top:16px;"><button class="action-btn undo" style="width:100%; color:#ff4757; padding:12px; font-size:1rem;" onclick="resetAll()">全データを初期化</button></div>`;
+
+      <div class="status-card" style="margin-top:16px;">
+        <h3 style="font-size:1.15rem; margin-bottom:10px;">💾 データのバックアップ・復元</h3>
+        <p style="font-size:0.95rem; color:var(--text-sub); margin-bottom:12px; line-height:1.4;">
+          現在の全タスク履歴やメモをファイル保存、またはテキスト貼り付けで復元できます。
+        </p>
+        <button class="submit-btn" style="background:#2ed573; margin-bottom:14px;" onclick="exportData()">📁 データを保存（エクスポート）</button>
+        
+        <textarea id="import-text-area" class="form-control" rows="3" placeholder="バックアップしたJSONテキストをここに貼り付け..." style="font-size:0.85rem; margin-bottom:8px;"></textarea>
+        <button class="submit-btn" style="background:#1e90ff;" onclick="importData()">📥 データを復元（インポート）</button>
+      </div>
+    `;
   }
 }
 

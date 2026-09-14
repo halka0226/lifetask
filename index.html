@@ -57,6 +57,32 @@
     </div>
   </div>
 
+  <div id="interval-modal-overlay" onclick="closeIntervalModal()">
+    <div class="datepicker-sheet" onclick="event.stopPropagation()">
+      <div id="interval-modal-title" style="font-size:1.2rem; font-weight:900; margin-bottom:12px;">🔄 周期日数の設定</div>
+      <div style="font-size:0.9rem; font-weight:800; color:var(--text-sub); margin-bottom:8px;">よく使う周期から選択（スロット）：</div>
+      <div class="slot-grid">
+        <button class="slot-btn" onclick="setIntervalFromSlot(3)">3日</button>
+        <button class="slot-btn" onclick="setIntervalFromSlot(7)">7日 (1週)</button>
+        <button class="slot-btn" onclick="setIntervalFromSlot(14)">14日 (2週)</button>
+        <button class="slot-btn" onclick="setIntervalFromSlot(21)">21日 (3週)</button>
+        <button class="slot-btn" onclick="setIntervalFromSlot(30)">30日 (1ヶ月)</button>
+        <button class="slot-btn" onclick="setIntervalFromSlot(60)">60日 (2ヶ月)</button>
+        <button class="slot-btn" onclick="setIntervalFromSlot(90)">90日 (3ヶ月)</button>
+        <button class="slot-btn" onclick="setIntervalFromSlot(180)">180日 (半年)</button>
+      </div>
+      <div style="font-size:0.9rem; font-weight:800; color:var(--text-sub); margin:12px 0 6px 0;">または直接日数を入力：</div>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+        <input type="number" id="interval-modal-input" class="form-control" placeholder="例: 45" min="1" style="font-size:1.2rem; padding:12px;">
+        <span style="font-size:1.1rem; font-weight:900; white-space:nowrap;">日ごと</span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="action-btn undo" style="flex:1; padding:14px; font-size:1.05rem;" onclick="closeIntervalModal()">キャンセル</button>
+        <button class="submit-btn" style="flex:1.5; padding:14px; font-size:1.05rem;" onclick="applyIntervalCustom()">決定</button>
+      </div>
+    </div>
+  </div>
+
   <nav class="bottom-nav">
     <button class="nav-btn active" data-tab="today">
       <span class="nav-icon">☀️</span>
