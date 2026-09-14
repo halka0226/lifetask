@@ -617,7 +617,7 @@ function render() {
     });
     c.innerHTML = h;
 
-  // --- 🔄 定期（周期の残り日数をわかりやすく表示） ---
+  // --- 🔄 定期（周期の残り日数を表示） ---
   } else if (tab === "routine") {
     let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">🔄 定期メンテナンス</h2>';
     const now = new Date(getTodayString());
@@ -641,7 +641,6 @@ function render() {
         intervalBadge = `<span style="color:var(--text-sub); font-weight:700; background:#f1f2f6; padding:3px 8px; border-radius:6px; display:inline-block;">目安: ${item.intervalDays}日ごと (未実施)</span>`;
       }
 
-      // 締め切り設定（ある場合）
       let deadlineInfo = "";
       if (item.deadline) {
         const dlDiff = Math.ceil((new Date(item.deadline) - now) / 86400000);
@@ -812,6 +811,20 @@ function setupNavEvents() {
     });
   });
 }
+
+// ピンチズーム・ダブルタップ拡大防止
+document.addEventListener("gesturestart", e => e.preventDefault(), { passive: false });
+document.addEventListener("gesturechange", e => e.preventDefault(), { passive: false });
+document.addEventListener("gestureend", e => e.preventDefault(), { passive: false });
+
+let lastTouchEnd = 0;
+document.addEventListener("touchend", e => {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) {
+    e.preventDefault();
+  }
+  lastTouchEnd = now;
+}, { passive: false });
 
 loadState();
 render();
