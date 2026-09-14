@@ -65,14 +65,19 @@ const DEFAULT_DAILY = [
   }
 ];
 
+// 🌟 「たまに」の項目をフル復活
 const DEFAULT_OCCASIONAL = [
+  { id: "occ_1", title: "美容室予約", completed: false, completedAt: null, lastDoneDate: null },
+  { id: "occ_2", title: "まつげパーマ予約", completed: false, completedAt: null, lastDoneDate: null },
+  { id: "occ_3", title: "歯医者予約", completed: false, completedAt: null, lastDoneDate: null },
   { id: "occ_4", title: "タブレット充電", completed: false, completedAt: null, lastDoneDate: null },
+  { id: "occ_5", title: "イヤホン充電", completed: false, completedAt: null, lastDoneDate: null },
+  { id: "occ_6", title: "スピーカー充電", completed: false, completedAt: null, lastDoneDate: null },
   { id: "occ_7", title: "美顔器充電", completed: false, completedAt: null, lastDoneDate: null },
   { id: "occ_8", title: "大きめの掃除", completed: false, completedAt: null, lastDoneDate: null, memo: "", allowMemo: true },
   { id: "occ_9", title: "捨て活", completed: false, completedAt: null, lastDoneDate: null, memo: "", allowMemo: true }
 ];
 
-// 🌟 順序通りに配置・締め切り（deadline）対応の定期メンテナンス
 const DEFAULT_ROUTINES = [
   { id: "rt_nail", title: "セルフネイル付け替え", intervalDays: 14, lastDone: null, memo: "", allowMemo: true, deadline: null },
   { id: "rt_hair", title: "美容室", intervalDays: 60, lastDone: null, memo: "", allowMemo: true, deadline: null },
@@ -86,7 +91,7 @@ const DEFAULT_ROUTINES = [
   { id: "rt_checkup", title: "港区健康診断", intervalDays: 365, lastDone: null, memo: "", allowMemo: true, deadline: null }
 ];
 
-const STORAGE_KEY = "LIFE_OS_DATA_V26_DEADLINES";
+const STORAGE_KEY = "LIFE_OS_DATA_V28_GRID2";
 let state = {
   currentTab: "today",
   categories: [],
@@ -266,17 +271,17 @@ window.openDoneModal = function() {
   if (titleEl) titleEl.textContent = `📋 今日できたこと (${list.length}個)`;
 
   if (list.length === 0) {
-    listEl.innerHTML = `<div style="text-align:center; color:var(--text-sub); font-size:0.88rem; padding:24px 0;">まだ完了したタスクはありません✨<br>マイペースに進めていきましょう！</div>`;
+    listEl.innerHTML = `<div style="text-align:center; color:var(--text-sub); font-size:1.05rem; padding:28px 0;">まだ完了したタスクはありません✨<br>マイペースに進めていきましょう！</div>`;
   } else {
     let h = "";
     list.forEach(item => {
       h += `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed #eee; font-size:0.9rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px dashed #eee; font-size:1.08rem;">
           <div style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-            <span style="font-size:0.75rem; color:var(--text-sub); margin-right:6px;">${item.cat}</span>
-            <span style="font-weight:600;">${item.title}</span>
+            <span style="font-size:0.88rem; color:var(--text-sub); margin-right:8px;">${item.cat}</span>
+            <span style="font-weight:700;">${item.title}</span>
           </div>
-          <span style="font-size:0.78rem; font-weight:700; color:var(--primary); background:var(--primary-light); padding:2px 8px; border-radius:6px; margin-left:8px; flex-shrink:0;">${item.time}</span>
+          <span style="font-size:0.88rem; font-weight:800; color:var(--primary); background:var(--primary-light); padding:3px 9px; border-radius:8px; margin-left:10px; flex-shrink:0;">${item.time}</span>
         </div>
       `;
     });
@@ -317,7 +322,6 @@ window.batchComplete = function(catId) {
 
 window.onDiaryInput = val => { state.todayDiary = val; saveState(); };
 
-// --- たまに ---
 window.toggleOccasional = function(id) {
   const item = state.occasional.find(o => o.id === id);
   if (!item) return;
@@ -353,7 +357,6 @@ window.setOccasionalLastDone = function(id) {
   }
 };
 
-// --- 定期 ---
 window.doneRoutine = function(id) {
   const item = state.routines.find(r => r.id === id);
   if (!item) return;
@@ -390,7 +393,6 @@ window.setRoutineLastDone = function(id) {
   }
 };
 
-// 🌟 締め切り（リミット日）の設定・解除
 window.setRoutineDeadline = function(id) {
   const item = state.routines.find(r => r.id === id);
   if (!item) return;
@@ -483,7 +485,7 @@ function render() {
 
   updateFloatingBadge();
 
-  // --- ☀️ 今日 ---
+  // --- ☀️ 今日（2列グリッドでコンパクト表示） ---
   if (tab === "today") {
     let done = 0;
     state.categories.forEach(cat => cat.tasks.forEach(t => {
@@ -504,47 +506,60 @@ function render() {
 
     state.categories.filter(cat => cat.id !== "cleaning").forEach(cat => {
       const isSingle = cat.single || cat.tasks.length <= 1;
-      h += `<div class="category-group">
-        <div class="category-header"><span>${cat.name}</span>${!isSingle ? `<button class="batch-btn" onclick="batchComplete('${cat.id}')">まとめて完了</button>` : ''}</div>`;
+      h += `
+        <div class="category-group">
+          <div class="category-header">
+            <span>${cat.name}</span>
+            ${!isSingle ? `<button class="batch-btn" onclick="batchComplete('${cat.id}')">まとめて完了</button>` : ''}
+          </div>
+          <div class="task-grid-container">
+      `;
       cat.tasks.forEach(t => {
         const isDone = !!state.todayLog[t.id];
-        h += `<div class="task-item ${isDone ? 'checked' : ''}" onclick="toggleTask('${t.id}')">
-          <div class="task-checkbox">${isDone ? '✔' : ''}</div>
-          <div class="task-title">${t.title}</div>
-          <div class="task-time">${state.todayLog[t.id] || ''}</div>
-        </div>`;
+        h += `
+          <div class="task-item ${isDone ? 'checked' : ''}" onclick="toggleTask('${t.id}')">
+            <div class="task-checkbox">${isDone ? '✔' : ''}</div>
+            <div class="task-title">${t.title}</div>
+            <div class="task-time">${state.todayLog[t.id] || ''}</div>
+          </div>
+        `;
       });
-      h += `</div>`;
+      h += `</div></div>`;
     });
 
-    h += `<div class="status-card" style="margin-top:10px;">
-      <div style="font-size:0.92rem; font-weight:800; margin-bottom:8px;">📝 今日のメモ・日記</div>
-      <textarea class="form-control" rows="3" placeholder="体調、気づき、ひと言などを自由に記録..." oninput="onDiaryInput(this.value)" style="resize:none; font-size:0.88rem; line-height:1.4;">${state.todayDiary || ""}</textarea>
+    h += `<div class="status-card" style="margin-top:14px;">
+      <div style="font-size:1.15rem; font-weight:800; margin-bottom:8px;">📝 今日のメモ・日記</div>
+      <textarea class="form-control" rows="3" placeholder="体調、気づき、ひと言などを自由に記録..." oninput="onDiaryInput(this.value)" style="resize:none; line-height:1.4;">${state.todayDiary || ""}</textarea>
     </div>`;
     c.innerHTML = h;
 
-  // --- 🧹 掃除・空き時間 ---
+  // --- 🧹 掃除・空き時間（2列グリッド） ---
   } else if (tab === "freetime") {
     const cleanCat = state.categories.find(c => c.id === "cleaning");
-    let h = `<h2 style="font-size:1.15rem; font-weight:800; margin-bottom:12px;">🧹 掃除・空き時間タスク</h2>`;
+    let h = `<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">🧹 掃除・空き時間タスク</h2>`;
     if (cleanCat) {
-      h += `<div class="category-group">
-        <div class="category-header">
-          <span>${cleanCat.name}</span>
-          <button class="batch-btn" onclick="batchComplete('${cleanCat.id}')">まとめて完了</button>
-        </div>`;
+      h += `
+        <div class="category-group">
+          <div class="category-header">
+            <span>${cleanCat.name}</span>
+            <button class="batch-btn" onclick="batchComplete('${cleanCat.id}')">まとめて完了</button>
+          </div>
+          <div class="task-grid-container">
+      `;
       cleanCat.tasks.forEach(t => {
         const isDone = !!state.todayLog[t.id];
-        h += `<div class="task-item ${isDone ? 'checked' : ''}" onclick="toggleTask('${t.id}')">
-          <div class="task-checkbox">${isDone ? '✔' : ''}</div>
-          <div class="task-title">${t.title}</div>
-          <div class="task-time">${state.todayLog[t.id] || ''}</div>
-        </div>`;
+        h += `
+          <div class="task-item ${isDone ? 'checked' : ''}" onclick="toggleTask('${t.id}')">
+            <div class="task-checkbox">${isDone ? '✔' : ''}</div>
+            <div class="task-title">${t.title}</div>
+            <div class="task-time">${state.todayLog[t.id] || ''}</div>
+          </div>
+        `;
       });
-      h += `</div>`;
+      h += `</div></div>`;
     }
-    h += `<div class="status-card" style="margin-top:12px;">
-      <div style="font-size:0.85rem; color:var(--text-sub); line-height:1.5;">
+    h += `<div class="status-card" style="margin-top:14px;">
+      <div style="font-size:1.05rem; color:var(--text-sub); line-height:1.5;">
         💡 空き時間のインプット（新しい音楽・映像・リサーチ）や掃除・不用品整理を気軽にこなしてチェックしましょう！
       </div>
     </div>`;
@@ -552,19 +567,19 @@ function render() {
 
   // --- 📋 全部 ---
   } else if (tab === "all") {
-    let h = '<h2 style="font-size:1.15rem; font-weight:800; margin-bottom:12px;">📋 毎日のタスク</h2>';
+    let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">📋 毎日のタスク</h2>';
     state.categories.forEach(cat => {
-      h += `<div class="category-group"><div class="category-header"><span>${cat.name}</span></div>`;
+      h += `<div class="category-group"><div class="category-header"><span>${cat.name}</span></div><div class="task-grid-container">`;
       cat.tasks.forEach(t => {
         h += `<div class="task-item" style="cursor:default;"><div class="task-title">${t.title}</div><button class="action-btn undo" style="color:#ff4757;" onclick="deleteDailyTask('${cat.id}', '${t.id}')">削除</button></div>`;
       });
-      h += `</div>`;
+      h += `</div></div>`;
     });
     c.innerHTML = h;
 
   // --- 💡 たまに ---
   } else if (tab === "occasional") {
-    let h = '<h2 style="font-size:1.15rem; font-weight:800; margin-bottom:12px;">💡 たまにやるタスク</h2>';
+    let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">💡 たまにやるタスク</h2>';
     const now = new Date(getTodayString());
     state.occasional.forEach(item => {
       let info = "未実施";
@@ -573,21 +588,21 @@ function render() {
         info = `${item.lastDoneDate} (${diff}日前)`;
       }
       h += `<div class="item-card"><div class="item-card-row">
-        <div class="item-info"><div style="font-weight:700; font-size:0.92rem; ${item.completed ? 'text-decoration:line-through; opacity:0.6;' : ''}">${item.title}</div>
-        <div style="font-size:0.72rem; color:var(--text-sub); margin-top:2px;">前回：${info}</div>
-        ${item.completedAt ? `<div style="font-size:0.7rem; color:var(--primary); margin-top:1px;">今回完了: ${item.completedAt}</div>` : ''}</div>
+        <div class="item-info"><div style="font-weight:800; font-size:1.15rem; ${item.completed ? 'text-decoration:line-through; opacity:0.6;' : ''}">${item.title}</div>
+        <div style="font-size:0.92rem; color:var(--text-sub); margin-top:4px;">前回：${info}</div>
+        ${item.completedAt ? `<div style="font-size:0.88rem; color:var(--primary); margin-top:2px;">今回完了: ${item.completedAt}</div>` : ''}</div>
         <div class="item-actions">
-          <button class="action-btn undo" style="padding:4px 6px; font-size:0.72rem;" onclick="setOccasionalLastDone('${item.id}')">📅 日付</button>
-          ${item.allowMemo ? `<button class="action-btn undo" style="padding:4px 6px; font-size:0.72rem;" onclick="editOccasionalMemo('${item.id}')">📝</button>` : ''}
+          <button class="action-btn undo" style="padding:6px 10px; font-size:0.88rem;" onclick="setOccasionalLastDone('${item.id}')">📅 日付</button>
+          ${item.allowMemo ? `<button class="action-btn undo" style="padding:6px 10px; font-size:0.88rem;" onclick="editOccasionalMemo('${item.id}')">📝</button>` : ''}
           <button class="${item.completed ? 'action-btn undo' : 'action-btn'}" onclick="toggleOccasional('${item.id}')">${item.completed ? '戻す' : '完了'}</button>
         </div>
-      </div>${item.memo ? `<div style="font-size:0.78rem; background:#f8f9fa; padding:6px 8px; border-radius:8px; color:var(--text); word-break:break-all;">📝 ${item.memo}</div>` : ''}</div>`;
+      </div>${item.memo ? `<div style="font-size:0.95rem; background:#f8f9fa; padding:8px 10px; border-radius:10px; color:var(--text); word-break:break-all;">📝 ${item.memo}</div>` : ''}</div>`;
     });
     c.innerHTML = h;
 
-  // --- 🔄 定期（締め切り表示対応） ---
+  // --- 🔄 定期 ---
   } else if (tab === "routine") {
-    let h = '<h2 style="font-size:1.15rem; font-weight:800; margin-bottom:12px;">🔄 定期メンテナンス</h2>';
+    let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">🔄 定期メンテナンス</h2>';
     const now = new Date(getTodayString());
     state.routines.forEach(item => {
       let daysAgo = "未実施", left = item.intervalDays;
@@ -595,18 +610,17 @@ function render() {
         const diff = Math.floor((now - new Date(item.lastDone)) / 86400000);
         daysAgo = `${diff}日前`; left = item.intervalDays - diff;
       }
-      const intervalStatus = left <= 0 ? '<span style="color:#e02424; font-weight:700;">今すぐ！</span>' : `あと ${left}日`;
+      const intervalStatus = left <= 0 ? '<span style="color:#e02424; font-weight:800;">今すぐ！</span>' : `あと ${left}日`;
 
-      // 締め切り日数の計算
       let deadlineInfo = "";
       if (item.deadline) {
         const dlDiff = Math.ceil((new Date(item.deadline) - now) / 86400000);
         if (dlDiff < 0) {
-          deadlineInfo = `<span style="color:#e02424; font-weight:800; background:#ffebeb; padding:2px 6px; border-radius:4px;">🚨 期限超過 (${Math.abs(dlDiff)}日遅れ / ${item.deadline})</span>`;
+          deadlineInfo = `<span style="color:#e02424; font-weight:800; background:#ffebeb; padding:3px 8px; border-radius:6px;">🚨 期限超過 (${Math.abs(dlDiff)}日遅れ / ${item.deadline})</span>`;
         } else if (dlDiff === 0) {
-          deadlineInfo = `<span style="color:#e02424; font-weight:800; background:#fff3cd; padding:2px 6px; border-radius:4px;">⚠️ 今日が締め切り！ (${item.deadline})</span>`;
+          deadlineInfo = `<span style="color:#e02424; font-weight:800; background:#fff3cd; padding:3px 8px; border-radius:6px;">⚠️ 今日が締め切り！ (${item.deadline})</span>`;
         } else {
-          deadlineInfo = `<span style="color:#d97706; font-weight:700; background:#fffbeb; padding:2px 6px; border-radius:4px;">⏰ 期限: ${item.deadline} (あと${dlDiff}日)</span>`;
+          deadlineInfo = `<span style="color:#d97706; font-weight:800; background:#fffbeb; padding:3px 8px; border-radius:6px;">⏰ 期限: ${item.deadline} (あと${dlDiff}日)</span>`;
         }
       }
 
@@ -614,21 +628,21 @@ function render() {
         <div class="item-card">
           <div class="item-card-row">
             <div class="item-info">
-              <div style="font-weight:700; font-size:0.92rem;">${item.title}</div>
-              <div style="font-size:0.72rem; color:var(--text-sub); margin-top:2px;">${item.intervalDays}日ごと (前回: ${daysAgo}) ・ ${intervalStatus}</div>
-              ${deadlineInfo ? `<div style="font-size:0.74rem; margin-top:4px;">${deadlineInfo}</div>` : ''}
+              <div style="font-weight:800; font-size:1.18rem;">${item.title}</div>
+              <div style="font-size:0.92rem; color:var(--text-sub); margin-top:4px;">${item.intervalDays}日ごと (前回: ${daysAgo}) ・ ${intervalStatus}</div>
+              ${deadlineInfo ? `<div style="font-size:0.92rem; margin-top:6px;">${deadlineInfo}</div>` : ''}
             </div>
-            <div class="item-actions" style="flex-direction:column; gap:4px;">
-              <button class="action-btn" onclick="doneRoutine('${item.id}')">やった！</button>
-              <div style="display:flex; gap:3px;">
-                <button class="action-btn undo" style="padding:3px 5px; font-size:0.65rem;" onclick="setRoutineLastDone('${item.id}')">📅 日付</button>
-                <button class="action-btn undo" style="padding:3px 5px; font-size:0.65rem;" onclick="setRoutineDeadline('${item.id}')">⏰ 期限</button>
-                ${item.allowMemo ? `<button class="action-btn undo" style="padding:3px 5px; font-size:0.65rem;" onclick="editRoutineMemo('${item.id}')">メモ</button>` : ''}
-                <button class="action-btn undo" style="padding:3px 5px; font-size:0.65rem;" onclick="editRoutineInterval('${item.id}')">周期</button>
+            <div class="item-actions" style="flex-direction:column; gap:6px;">
+              <button class="action-btn" style="width:100%; padding:8px;" onclick="doneRoutine('${item.id}')">やった！</button>
+              <div style="display:flex; gap:4px;">
+                <button class="action-btn undo" style="padding:4px 7px; font-size:0.8rem;" onclick="setRoutineLastDone('${item.id}')">📅 日付</button>
+                <button class="action-btn undo" style="padding:4px 7px; font-size:0.8rem;" onclick="setRoutineDeadline('${item.id}')">⏰ 期限</button>
+                ${item.allowMemo ? `<button class="action-btn undo" style="padding:4px 7px; font-size:0.8rem;" onclick="editRoutineMemo('${item.id}')">メモ</button>` : ''}
+                <button class="action-btn undo" style="padding:4px 7px; font-size:0.8rem;" onclick="editRoutineInterval('${item.id}')">周期</button>
               </div>
             </div>
           </div>
-          ${item.memo ? `<div style="font-size:0.78rem; background:#f8f9fa; padding:6px 8px; border-radius:8px; color:var(--text); word-break:break-all;">📝 ${item.memo}</div>` : ''}
+          ${item.memo ? `<div style="font-size:0.95rem; background:#f8f9fa; padding:8px 10px; border-radius:10px; color:var(--text); word-break:break-all;">📝 ${item.memo}</div>` : ''}
         </div>
       `;
     });
@@ -636,7 +650,7 @@ function render() {
 
   // --- ➕ 追加 ---
   } else if (tab === "add") {
-    c.innerHTML = `<h2 style="font-size:1.15rem; font-weight:800; margin-bottom:12px;">➕ タスク追加</h2>
+    c.innerHTML = `<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">➕ タスク追加</h2>
       <div class="status-card">
         <div class="form-group"><label class="form-label">タスク名</label><input type="text" id="add-title" class="form-control" placeholder="例: 充電する"></div>
         <div class="form-group"><label class="form-label">カテゴリ</label><select id="add-cat" class="form-control">${state.categories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('')}</select></div>
@@ -649,21 +663,21 @@ function render() {
     const mStats = getStatsSummary(30);
 
     let h = `
-      <h2 style="font-size:1.15rem; font-weight:800; margin-bottom:12px;">📊 達成サマリー & 履歴</h2>
-      <div class="status-card" style="margin-bottom:14px; border-left: 4px solid var(--primary);">
-        <div style="font-size:0.95rem; font-weight:800; margin-bottom:12px;">📈 達成合計</div>
+      <h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">📊 達成サマリー & 履歴</h2>
+      <div class="status-card" style="margin-bottom:16px; border-left: 5px solid var(--primary);">
+        <div style="font-size:1.15rem; font-weight:900; margin-bottom:12px;">📈 達成合計</div>
         
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px dashed #eee;">
-          <span style="font-size:0.88rem; font-weight:700;">🗓 直近1週間（7日間）</span>
-          <span style="font-size:1.1rem; font-weight:900; color:var(--primary);">${wStats.done} <span style="font-size:0.75rem; color:var(--text-sub); font-weight:600;">個達成</span></span>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed #eee;">
+          <span style="font-size:1.05rem; font-weight:800;">🗓 直近1週間（7日間）</span>
+          <span style="font-size:1.35rem; font-weight:900; color:var(--primary);">${wStats.done} <span style="font-size:0.92rem; color:var(--text-sub); font-weight:700;">個達成</span></span>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0;">
-          <span style="font-size:0.88rem; font-weight:700;">📅 直近1ヶ月（30日間）</span>
-          <span style="font-size:1.1rem; font-weight:900; color:var(--primary);">${mStats.done} <span style="font-size:0.75rem; color:var(--text-sub); font-weight:600;">個達成</span></span>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;">
+          <span style="font-size:1.05rem; font-weight:800;">📅 直近1ヶ月（30日間）</span>
+          <span style="font-size:1.35rem; font-weight:900; color:var(--primary);">${mStats.done} <span style="font-size:0.92rem; color:var(--text-sub); font-weight:700;">個達成</span></span>
         </div>
       </div>
-      <div style="font-size:0.88rem; font-weight:800; color:var(--text-sub); margin-bottom:8px;">
+      <div style="font-size:1.05rem; font-weight:800; color:var(--text-sub); margin-bottom:10px;">
         日別の記録（タップで詳細表示）
       </div>
     `;
@@ -679,7 +693,7 @@ function render() {
 
     const keys = Object.keys(allHistory).sort().reverse();
     if (!keys.length) {
-      h += '<div style="text-align:center; color:var(--text-sub); padding:20px;">履歴はまだありません</div>';
+      h += '<div style="text-align:center; color:var(--text-sub); font-size:1.05rem; padding:24px;">履歴はまだありません</div>';
     } else {
       keys.forEach(k => {
         const rec = allHistory[k];
@@ -690,32 +704,32 @@ function render() {
         h += `
           <div class="item-card history-date-card" onclick="toggleHistoryDate('${k}')">
             <div class="history-header-row">
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span style="font-weight:800; font-size:0.95rem;">${k}</span>
-                ${isToday ? `<span style="font-size:0.7rem; font-weight:700; color:var(--primary); background:var(--primary-light); padding:1px 6px; border-radius:4px;">今日</span>` : ''}
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-weight:900; font-size:1.15rem;">${k}</span>
+                ${isToday ? `<span style="font-size:0.85rem; font-weight:800; color:var(--primary); background:var(--primary-light); padding:2px 8px; border-radius:6px;">今日</span>` : ''}
               </div>
               <div style="display:flex; align-items:center;">
-                <span style="font-size:0.95rem; font-weight:800; color:var(--primary);">${rec.done || 0} 個完了</span>
+                <span style="font-size:1.15rem; font-weight:900; color:var(--primary);">${rec.done || 0} 個完了</span>
                 <span class="history-arrow ${isOpen ? 'open' : ''}">▶</span>
               </div>
             </div>
-            ${rec.diary ? `<div style="font-size:0.78rem; color:var(--text-sub); background:#f8f9fa; padding:6px 8px; border-radius:8px; width:100%;">📝 ${rec.diary}</div>` : ''}
+            ${rec.diary ? `<div style="font-size:0.95rem; color:var(--text-sub); background:#f8f9fa; padding:8px 10px; border-radius:8px; width:100%;">📝 ${rec.diary}</div>` : ''}
             
             <div class="history-detail-box ${isOpen ? 'open' : ''}" onclick="event.stopPropagation()">
-              <div style="font-size:0.8rem; font-weight:800; color:var(--text-sub); margin-bottom:6px;">📋 できたこと (${taskList.length}件)</div>
+              <div style="font-size:0.95rem; font-weight:800; color:var(--text-sub); margin-bottom:8px;">📋 できたこと (${taskList.length}件)</div>
         `;
 
         if (!taskList.length) {
-          h += `<div style="font-size:0.8rem; color:var(--text-sub); padding:6px 0;">完了したタスクの記録はありません</div>`;
+          h += `<div style="font-size:0.95rem; color:var(--text-sub); padding:8px 0;">完了したタスクの記録はありません</div>`;
         } else {
           taskList.forEach(t => {
             h += `
-              <div style="display:flex; justify-content:space-between; align-items:center; padding:5px 0; border-bottom:1px dashed #f1f2f6; font-size:0.84rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px dashed #f1f2f6; font-size:1.02rem;">
                 <div style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                  <span style="font-size:0.72rem; color:var(--text-sub); margin-right:4px;">${t.cat}</span>
-                  <span style="font-weight:600;">${t.title}</span>
+                  <span style="font-size:0.85rem; color:var(--text-sub); margin-right:6px;">${t.cat}</span>
+                  <span style="font-weight:700;">${t.title}</span>
                 </div>
-                <span style="font-size:0.72rem; font-weight:700; color:var(--primary); background:var(--primary-light); padding:1px 6px; border-radius:4px; margin-left:8px; flex-shrink:0;">${t.time}</span>
+                <span style="font-size:0.85rem; font-weight:800; color:var(--primary); background:var(--primary-light); padding:2px 8px; border-radius:6px; margin-left:10px; flex-shrink:0;">${t.time}</span>
               </div>
             `;
           });
@@ -731,17 +745,17 @@ function render() {
 
   // --- ⚙️ 設定 ---
   } else if (tab === "settings") {
-    c.innerHTML = `<h2 style="font-size:1.15rem; font-weight:800; margin-bottom:12px;">⚙️ 設定</h2>
+    c.innerHTML = `<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">⚙️ 設定</h2>
       <div class="status-card">
-        <h3 style="font-size:0.95rem; margin-bottom:8px;">📊 Googleスプレッドシート連携</h3>
-        <p style="font-size:0.75rem; color:var(--text-sub); margin-bottom:10px;">
+        <h3 style="font-size:1.15rem; margin-bottom:10px;">📊 Googleスプレッドシート連携</h3>
+        <p style="font-size:0.95rem; color:var(--text-sub); margin-bottom:12px; line-height:1.4;">
           タスク完了時・日付変更時にバックグラウンドで自動同期されます（手動送信も可能です）。
         </p>
-        <input type="text" id="gas-url-input" class="form-control" placeholder="https://script.google.com/macros/s/.../exec" value="${localStorage.getItem("GAS_WEBAPP_URL") || ""}" style="margin-bottom:8px; font-size:0.78rem;">
-        <button class="submit-btn" style="margin-bottom:8px;" onclick="saveGasUrl()">URLを保存</button>
+        <input type="text" id="gas-url-input" class="form-control" placeholder="https://script.google.com/macros/s/.../exec" value="${localStorage.getItem("GAS_WEBAPP_URL") || ""}" style="margin-bottom:10px;">
+        <button class="submit-btn" style="margin-bottom:10px;" onclick="saveGasUrl()">URLを保存</button>
         <button class="submit-btn" style="background:var(--primary);" onclick="syncToSpreadsheet()">今すぐ手動で送信 📤</button>
       </div>
-      <div class="status-card" style="margin-top:14px;"><button class="action-btn undo" style="width:100%; color:#ff4757;" onclick="resetAll()">全データを初期化</button></div>`;
+      <div class="status-card" style="margin-top:16px;"><button class="action-btn undo" style="width:100%; color:#ff4757; padding:12px; font-size:1rem;" onclick="resetAll()">全データを初期化</button></div>`;
   }
 }
 
