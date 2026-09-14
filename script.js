@@ -65,7 +65,7 @@ const DEFAULT_DAILY = [
   }
 ];
 
-// 🌟 「たまに」の全項目を完全網羅
+// 「たまに」の全項目
 const DEFAULT_OCCASIONAL = [
   { id: "occ_1", title: "美容室予約", completed: false, completedAt: null, lastDoneDate: null },
   { id: "occ_2", title: "まつげパーマ予約", completed: false, completedAt: null, lastDoneDate: null },
@@ -79,6 +79,7 @@ const DEFAULT_OCCASIONAL = [
   { id: "occ_9", title: "捨て活", completed: false, completedAt: null, lastDoneDate: null, memo: "", allowMemo: true }
 ];
 
+// 定期メンテナンス項目
 const DEFAULT_ROUTINES = [
   { id: "rt_nail", title: "セルフネイル付け替え", intervalDays: 14, lastDone: null, memo: "", allowMemo: true, deadline: null },
   { id: "rt_hair", title: "美容室", intervalDays: 60, lastDone: null, memo: "", allowMemo: true, deadline: null },
@@ -92,7 +93,7 @@ const DEFAULT_ROUTINES = [
   { id: "rt_checkup", title: "港区健康診断", intervalDays: 365, lastDone: null, memo: "", allowMemo: true, deadline: null }
 ];
 
-const STORAGE_KEY = "LIFE_OS_DATA_V30_RESTORED";
+const STORAGE_KEY = "LIFE_OS_DATA_V31_CONFIRM";
 let state = {
   currentTab: "today",
   categories: [],
@@ -205,7 +206,6 @@ function loadState() {
     state.history = {};
     state.openHistoryDates = {};
   } else {
-    // 欠けている項目を自動復元・マージ
     DEFAULT_OCCASIONAL.forEach(defItem => {
       if (!state.occasional.some(o => o.id === defItem.id || o.title === defItem.title)) {
         state.occasional.push(defItem);
@@ -315,8 +315,16 @@ window.toggleHistoryDate = function(dateStr) {
   render();
 };
 
+// チェックを外す時だけ確認ダイアログ
 window.toggleTask = function(id) {
-  state.todayLog[id] ? delete state.todayLog[id] : (state.todayLog[id] = getCurrentTimeStr(), window.triggerPraise());
+  if (state.todayLog[id]) {
+    const ok = confirm("チェックをはずしますか？");
+    if (!ok) return;
+    delete state.todayLog[id];
+  } else {
+    state.todayLog[id] = getCurrentTimeStr();
+    window.triggerPraise();
+  }
   saveState(); 
   render();
   window.silentSyncToSpreadsheet();
@@ -339,8 +347,14 @@ window.onDiaryInput = val => { state.todayDiary = val; saveState(); };
 window.toggleOccasional = function(id) {
   const item = state.occasional.find(o => o.id === id);
   if (!item) return;
-  item.completed = !item.completed;
+
   if (item.completed) {
+    const ok = confirm("完了を取り消しますか？");
+    if (!ok) return;
+    item.completed = false;
+    item.completedAt = null;
+  } else {
+    item.completed = true;
     const today = getTodayString();
     item.completedAt = `${today} ${getCurrentTimeStr()}`;
     item.lastDoneDate = today;
@@ -349,8 +363,9 @@ window.toggleOccasional = function(id) {
       if (m !== null) item.memo = m.trim();
     }
     window.triggerPraise();
-  } else { item.completedAt = null; }
-  saveState(); render();
+  }
+  saveState(); 
+  render();
 };
 
 window.editOccasionalMemo = function(id) {
@@ -499,7 +514,7 @@ function render() {
 
   updateFloatingBadge();
 
-  // --- ☀️ 今日（2列グリッドでコンパクト表示） ---
+  // --- ☀️ 今日（2列グリッド配置） ---
   if (tab === "today") {
     let done = 0;
     state.categories.forEach(cat => cat.tasks.forEach(t => {

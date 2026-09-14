@@ -3,90 +3,73 @@
 
   <head>
     <meta charset="UTF-8">
-    <title>Life log</title>
+    <title>Life log３ </title>
     <link rel="stylesheet" href="./style.css">
 
   </head>
     
   <body>
-  <!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Life OS">
-  <title>Life OS</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
   <!-- えらい！ ポップアップ -->
-  <div id="celebration-overlay">
-    <div class="praise-badge">✨ えらい！ ✨</div>
-  </div>
+<div id="celebration-overlay">
+  <div class="praise-badge">✨ えらい！ ✨</div>
+</div>
 
-  <!-- メインコンテンツ表示エリア -->
-  <div id="main-container"></div>
+<!-- メインコンテンツ表示エリア -->
+<div id="main-container"></div>
 
-  <!-- できたこと一覧 フローティングボタン -->
-  <button id="floating-done-btn" onclick="openDoneModal()">
-    <span class="floating-icon">📋</span>
-    <span class="floating-text">できたこと</span>
-    <span id="floating-done-count" class="floating-badge">0</span>
-  </button>
+<!-- できたこと一覧 フローティングボタン -->
+<button id="floating-done-btn" onclick="openDoneModal()">
+  <span class="floating-icon">📋</span>
+  <span class="floating-text">できたこと</span>
+  <span id="floating-done-count" class="floating-badge">0</span>
+</button>
 
-  <!-- できたこと一覧 ポップアップモーダル -->
-  <div id="done-modal-overlay" onclick="closeDoneModal(event)">
-    <div class="done-modal-sheet" onclick="event.stopPropagation()">
-      <div class="done-modal-header">
-        <div id="done-modal-title" style="font-weight:900; font-size:1.3rem;">📋 今日できたこと</div>
-        <button class="done-modal-close" onclick="closeDoneModal()">✕</button>
-      </div>
-      <div id="done-modal-list" class="done-modal-body"></div>
+<!-- できたこと一覧 ポップアップモーダル -->
+<div id="done-modal-overlay" onclick="closeDoneModal(event)">
+  <div class="done-modal-sheet" onclick="event.stopPropagation()">
+    <div class="done-modal-header">
+      <div id="done-modal-title" style="font-weight:900; font-size:1.3rem;">📋 今日できたこと</div>
+      <button class="done-modal-close" onclick="closeDoneModal()">✕</button>
     </div>
+    <div id="done-modal-list" class="done-modal-body"></div>
   </div>
+</div>
 
-  <!-- 下部固定ナビゲーションバー（4列×2段：定期のあとに全部） -->
-  <nav class="bottom-nav">
-    <button class="nav-btn active" data-tab="today">
-      <span class="nav-icon">☀️</span>
-      <span class="nav-label">今日</span>
-    </button>
-    <button class="nav-btn" data-tab="freetime">
-      <span class="nav-icon">🧹</span>
-      <span class="nav-label">掃除</span>
-    </button>
-    <button class="nav-btn" data-tab="occasional">
-      <span class="nav-icon">💡</span>
-      <span class="nav-label">たまに</span>
-    </button>
-    <button class="nav-btn" data-tab="routine">
-      <span class="nav-icon">🔄</span>
-      <span class="nav-label">定期</span>
-    </button>
-    <button class="nav-btn" data-tab="all">
-      <span class="nav-icon">📋</span>
-      <span class="nav-label">全部</span>
-    </button>
-    <button class="nav-btn" data-tab="add">
-      <span class="nav-icon">➕</span>
-      <span class="nav-label">追加</span>
-    </button>
-    <button class="nav-btn" data-tab="history">
-      <span class="nav-icon">📊</span>
-      <span class="nav-label">履歴</span>
-    </button>
-    <button class="nav-btn" data-tab="settings">
-      <span class="nav-icon">⚙️</span>
-      <span class="nav-label">設定</span>
-    </button>
-  </nav>
-
-  <script src="script.js"></script>
-</body>
-</html>
+<!-- 下部固定ナビゲーションバー（4列×2段：定期のあとに全部） -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" data-tab="today">
+    <span class="nav-icon">☀️</span>
+    <span class="nav-label">今日</span>
+  </button>
+  <button class="nav-btn" data-tab="freetime">
+    <span class="nav-icon">🧹</span>
+    <span class="nav-label">掃除</span>
+  </button>
+  <button class="nav-btn" data-tab="occasional">
+    <span class="nav-icon">💡</span>
+    <span class="nav-label">たまに</span>
+  </button>
+  <button class="nav-btn" data-tab="routine">
+    <span class="nav-icon">🔄</span>
+    <span class="nav-label">定期</span>
+  </button>
+  <button class="nav-btn" data-tab="all">
+    <span class="nav-icon">📋</span>
+    <span class="nav-label">全部</span>
+  </button>
+  <button class="nav-btn" data-tab="add">
+    <span class="nav-icon">➕</span>
+    <span class="nav-label">追加</span>
+  </button>
+  <button class="nav-btn" data-tab="history">
+    <span class="nav-icon">📊</span>
+    <span class="nav-label">履歴</span>
+  </button>
+  <button class="nav-btn" data-tab="settings">
+    <span class="nav-icon">⚙️</span>
+    <span class="nav-label">設定</span>
+  </button>
+</nav>
     <script  src="./script.js"></script>
 
   </body>
