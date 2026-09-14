@@ -65,11 +65,12 @@ const DEFAULT_DAILY = [
   }
 ];
 
-// 🌟 「たまに」の項目をフル復活
+// 🌟 「たまに」の全項目を完全網羅
 const DEFAULT_OCCASIONAL = [
   { id: "occ_1", title: "美容室予約", completed: false, completedAt: null, lastDoneDate: null },
   { id: "occ_2", title: "まつげパーマ予約", completed: false, completedAt: null, lastDoneDate: null },
   { id: "occ_3", title: "歯医者予約", completed: false, completedAt: null, lastDoneDate: null },
+  { id: "occ_nail", title: "セルフネイル", completed: false, completedAt: null, lastDoneDate: null, memo: "", allowMemo: true },
   { id: "occ_4", title: "タブレット充電", completed: false, completedAt: null, lastDoneDate: null },
   { id: "occ_5", title: "イヤホン充電", completed: false, completedAt: null, lastDoneDate: null },
   { id: "occ_6", title: "スピーカー充電", completed: false, completedAt: null, lastDoneDate: null },
@@ -91,7 +92,7 @@ const DEFAULT_ROUTINES = [
   { id: "rt_checkup", title: "港区健康診断", intervalDays: 365, lastDone: null, memo: "", allowMemo: true, deadline: null }
 ];
 
-const STORAGE_KEY = "LIFE_OS_DATA_V28_GRID2";
+const STORAGE_KEY = "LIFE_OS_DATA_V30_RESTORED";
 let state = {
   currentTab: "today",
   categories: [],
@@ -203,7 +204,20 @@ function loadState() {
     state.todayDiary = "";
     state.history = {};
     state.openHistoryDates = {};
+  } else {
+    // 欠けている項目を自動復元・マージ
+    DEFAULT_OCCASIONAL.forEach(defItem => {
+      if (!state.occasional.some(o => o.id === defItem.id || o.title === defItem.title)) {
+        state.occasional.push(defItem);
+      }
+    });
+    DEFAULT_ROUTINES.forEach(defItem => {
+      if (!state.routines.some(r => r.id === defItem.id || r.title === defItem.title)) {
+        state.routines.push(defItem);
+      }
+    });
   }
+
   if (!state.openHistoryDates) state.openHistoryDates = {};
   if (state.todayDateStr !== today) {
     recordDayHistory(state.todayDateStr);
@@ -565,18 +579,6 @@ function render() {
     </div>`;
     c.innerHTML = h;
 
-  // --- 📋 全部 ---
-  } else if (tab === "all") {
-    let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">📋 毎日のタスク</h2>';
-    state.categories.forEach(cat => {
-      h += `<div class="category-group"><div class="category-header"><span>${cat.name}</span></div><div class="task-grid-container">`;
-      cat.tasks.forEach(t => {
-        h += `<div class="task-item" style="cursor:default;"><div class="task-title">${t.title}</div><button class="action-btn undo" style="color:#ff4757;" onclick="deleteDailyTask('${cat.id}', '${t.id}')">削除</button></div>`;
-      });
-      h += `</div></div>`;
-    });
-    c.innerHTML = h;
-
   // --- 💡 たまに ---
   } else if (tab === "occasional") {
     let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">💡 たまにやるタスク</h2>';
@@ -645,6 +647,18 @@ function render() {
           ${item.memo ? `<div style="font-size:0.95rem; background:#f8f9fa; padding:8px 10px; border-radius:10px; color:var(--text); word-break:break-all;">📝 ${item.memo}</div>` : ''}
         </div>
       `;
+    });
+    c.innerHTML = h;
+
+  // --- 📋 全部 ---
+  } else if (tab === "all") {
+    let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">📋 毎日のタスク</h2>';
+    state.categories.forEach(cat => {
+      h += `<div class="category-group"><div class="category-header"><span>${cat.name}</span></div><div class="task-grid-container">`;
+      cat.tasks.forEach(t => {
+        h += `<div class="task-item" style="cursor:default;"><div class="task-title">${t.title}</div><button class="action-btn undo" style="color:#ff4757;" onclick="deleteDailyTask('${cat.id}', '${t.id}')">削除</button></div>`;
+      });
+      h += `</div></div>`;
     });
     c.innerHTML = h;
 

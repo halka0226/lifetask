@@ -35,7 +35,7 @@ body {
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
-  padding: 16px 14px 20px 14px;
+  padding: 16px 12px 20px 12px;
 }
 
 /* えらい！ ポップアップ */
@@ -91,18 +91,18 @@ body {
 /* フローティングボタン */
 #floating-done-btn {
   position: fixed;
-  right: 16px;
+  right: 14px;
   bottom: calc(var(--nav-height) + env(safe-area-inset-bottom, 20px) + 12px);
   background: linear-gradient(135deg, #ff6b8b 0%, #ff8e8e 100%);
   color: white;
   border: none;
   border-radius: 35px;
-  padding: 12px 18px;
+  padding: 10px 16px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-weight: 800;
-  font-size: 1.05rem;
+  font-size: 1rem;
   box-shadow: 0 4px 16px rgba(255, 107, 139, 0.45);
   cursor: pointer;
   z-index: 9000;
@@ -113,10 +113,10 @@ body {
 .floating-badge {
   background: white;
   color: var(--primary);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 900;
-  padding: 2px 9px;
-  border-radius: 14px;
+  padding: 2px 8px;
+  border-radius: 12px;
 }
 
 /* モーダル */
@@ -132,7 +132,7 @@ body {
 .done-modal-sheet {
   background: white; width: 100%; max-width: 600px; max-height: 80vh;
   border-radius: 24px 24px 0 0;
-  padding: 20px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px;
+  padding: 20px 18px calc(env(safe-area-inset-bottom, 20px) + 20px) 18px;
   box-shadow: 0 -8px 24px rgba(0,0,0,0.15);
   display: flex; flex-direction: column;
   animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -152,8 +152,8 @@ body {
 .status-card {
   background: white;
   border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 16px;
+  padding: 18px 16px;
+  margin-bottom: 14px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.04);
 }
 
@@ -162,35 +162,35 @@ body {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 10px;
-  padding-bottom: 16px;
-  margin-bottom: 16px;
+  gap: 8px;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
   border-bottom: 2px solid #f1f2f6;
 }
 
 .date-main {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 6px;
 }
 
 .date-year {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-sub);
 }
 
 .date-day-large {
-  font-size: 1.9rem;
+  font-size: 1.85rem;
   font-weight: 900;
   color: var(--text);
   letter-spacing: -0.02em;
 }
 
 .day-badge {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 800;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 8px;
   background: #f1f2f6;
   color: #4b6584;
@@ -203,12 +203,12 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 800;
   color: #d63031;
   background: #fff0f0;
   border: 1px solid #ffccd2;
-  padding: 4px 12px;
+  padding: 3px 10px;
   border-radius: 20px;
 }
 
@@ -219,7 +219,7 @@ body {
 }
 
 .progress-count-simple {
-  font-size: 2.2rem;
+  font-size: 2.1rem;
   font-weight: 900;
   color: var(--primary);
   display: flex;
@@ -228,7 +228,7 @@ body {
 }
 
 .progress-count-sub {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--text-sub);
 }
@@ -237,7 +237,7 @@ body {
 .category-group {
   background: white;
   border-radius: 18px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0,0,0,0.03);
   border: 1px solid #f1f2f6;
@@ -245,12 +245,12 @@ body {
 
 .category-header {
   background: var(--primary-light);
-  padding: 12px 16px;
+  padding: 10px 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-weight: 800;
-  font-size: 1.15rem;
+  font-size: 1.12rem;
   color: #d63031;
 }
 
@@ -258,50 +258,51 @@ body {
   background: white;
   color: var(--primary);
   border: 1px solid rgba(255,107,139,0.5);
-  padding: 6px 14px;
+  padding: 5px 12px;
   border-radius: 20px;
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   font-weight: 800;
   cursor: pointer;
   flex-shrink: 0;
 }
 
-/* 今日のタスク一覧：2列グリッドレイアウト */
+/* 🌟 スマホでも確実に2列（左右均等）配置にするグリッド設定 */
 .task-grid-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  padding: 10px;
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important; /* スマホ画面でも必ず2列固定 */
+  gap: 8px !important;
+  padding: 10px 8px !important;
   background: #ffffff;
 }
 
 .task-item {
   display: flex;
-  align-items: center;
-  padding: 12px 10px;
+  align-items: flex-start; /* 長いテキストでもチェックボックスが上揃えで見やすい */
+  padding: 10px 8px;
   border-radius: 12px;
   border: 1px solid var(--border);
   background: #fafafa;
   cursor: pointer;
   user-select: none;
   position: relative;
-  min-height: 58px;
+  min-height: 52px;
 }
 
 .task-checkbox {
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
   border: 2px solid #b2bec3;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 10px;
+  margin-right: 6px;
+  margin-top: 2px;
   flex-shrink: 0;
   background: white;
   font-weight: 900;
   color: white;
-  font-size: 15px;
+  font-size: 13px;
 }
 
 .task-item.checked {
@@ -316,7 +317,7 @@ body {
 
 .task-title {
   flex: 1;
-  font-size: 1.05rem;
+  font-size: 0.98rem; /* 2列でも読みやすく収まるサイズ感 */
   font-weight: 800;
   line-height: 1.35;
   word-break: break-all;
@@ -328,51 +329,52 @@ body {
 }
 
 .task-time {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 800;
   color: var(--primary);
-  margin-left: 4px;
-  padding: 2px 5px;
+  margin-top: 4px;
+  padding: 1px 4px;
   background: white;
-  border-radius: 6px;
+  border-radius: 4px;
   white-space: nowrap;
   display: none;
-  flex-shrink: 0;
 }
 
-.task-item.checked .task-time { display: inline-block; }
+.task-item.checked .task-time {
+  display: inline-block;
+}
 
 /* たまに・定期・履歴カード */
 .item-card {
   background: white;
   border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 14px;
+  padding: 14px 12px;
+  margin-bottom: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.03);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .item-card-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
 }
 
 .item-info { flex: 1; min-width: 0; }
-.item-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.item-actions { display: flex; gap: 6px; flex-shrink: 0; align-items: center; }
 
 .action-btn {
   background: var(--primary-light);
   color: var(--primary);
   border: 1px solid var(--primary);
-  padding: 8px 14px;
-  border-radius: 12px;
+  padding: 7px 12px;
+  border-radius: 10px;
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   white-space: nowrap;
   cursor: pointer;
 }
@@ -396,15 +398,15 @@ body {
 .history-arrow {
   font-size: 0.9rem;
   color: var(--text-sub);
-  margin-left: 10px;
+  margin-left: 8px;
   transition: transform 0.2s ease;
 }
 
 .history-arrow.open { transform: rotate(90deg); }
 
 .history-detail-box {
-  margin-top: 10px;
-  padding-top: 10px;
+  margin-top: 8px;
+  padding-top: 8px;
   border-top: 1px dashed #dfe6e9;
   display: none;
 }
@@ -412,14 +414,14 @@ body {
 .history-detail-box.open { display: block; }
 
 /* フォーム部品 */
-.form-group { margin-bottom: 16px; }
+.form-group { margin-bottom: 14px; }
 .form-label { display: block; font-weight: 800; font-size: 1.05rem; margin-bottom: 6px; }
 .form-control {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   border-radius: 12px;
   border: 1px solid #b2bec3;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   background: white;
 }
 
@@ -428,10 +430,10 @@ body {
   background: var(--primary);
   color: white;
   border: none;
-  padding: 16px;
+  padding: 14px;
   border-radius: 14px;
   font-weight: 800;
-  font-size: 1.15rem;
+  font-size: 1.12rem;
   cursor: pointer;
 }
 
@@ -458,12 +460,12 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   background: none;
   border: none;
   color: #636e72;
   cursor: pointer;
-  padding: 6px 4px;
+  padding: 6px 2px;
   border-radius: 10px;
   margin: 0 2px;
 }
@@ -474,5 +476,5 @@ body {
   font-weight: 900;
 }
 
-.nav-icon { font-size: 1.35rem; line-height: 1; }
-.nav-label { font-size: 0.92rem; font-weight: 800; white-space: nowrap; }
+.nav-icon { font-size: 1.25rem; line-height: 1; }
+.nav-label { font-size: 0.88rem; font-weight: 800; white-space: nowrap; }
