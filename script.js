@@ -617,27 +617,40 @@ function render() {
     });
     c.innerHTML = h;
 
-  // --- 🔄 定期 ---
+  // --- 🔄 定期（周期の残り日数をわかりやすく表示） ---
   } else if (tab === "routine") {
     let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">🔄 定期メンテナンス</h2>';
     const now = new Date(getTodayString());
     state.routines.forEach(item => {
-      let daysAgo = "未実施", left = item.intervalDays;
+      let daysAgoText = "未実施";
+      let intervalBadge = "";
+
       if (item.lastDone) {
         const diff = Math.floor((now - new Date(item.lastDone)) / 86400000);
-        daysAgo = `${diff}日前`; left = item.intervalDays - diff;
-      }
-      const intervalStatus = left <= 0 ? '<span style="color:#e02424; font-weight:800;">今すぐ！</span>' : `あと ${left}日`;
+        daysAgoText = `${item.lastDone} (${diff}日前)`;
+        const left = item.intervalDays - diff;
 
+        if (left > 0) {
+          intervalBadge = `<span style="color:#0984e3; font-weight:800; background:#e8f4fd; padding:3px 8px; border-radius:6px; display:inline-block;">🟢 周期目安: あと ${left}日 (${item.intervalDays}日ごと)</span>`;
+        } else if (left === 0) {
+          intervalBadge = `<span style="color:#d63031; font-weight:800; background:#ffebeb; padding:3px 8px; border-radius:6px; display:inline-block;">⚠️ 周期目安: 今日が予定日！ (${item.intervalDays}日ごと)</span>`;
+        } else {
+          intervalBadge = `<span style="color:#d63031; font-weight:800; background:#ffebeb; padding:3px 8px; border-radius:6px; display:inline-block;">🚨 周期超過: ${Math.abs(left)}日遅れ (今すぐ！)</span>`;
+        }
+      } else {
+        intervalBadge = `<span style="color:var(--text-sub); font-weight:700; background:#f1f2f6; padding:3px 8px; border-radius:6px; display:inline-block;">目安: ${item.intervalDays}日ごと (未実施)</span>`;
+      }
+
+      // 締め切り設定（ある場合）
       let deadlineInfo = "";
       if (item.deadline) {
         const dlDiff = Math.ceil((new Date(item.deadline) - now) / 86400000);
         if (dlDiff < 0) {
-          deadlineInfo = `<span style="color:#e02424; font-weight:800; background:#ffebeb; padding:3px 8px; border-radius:6px;">🚨 期限超過 (${Math.abs(dlDiff)}日遅れ / ${item.deadline})</span>`;
+          deadlineInfo = `<span style="color:#e02424; font-weight:800; background:#ffebeb; padding:3px 8px; border-radius:6px;">🚨 期限日超過 (${Math.abs(dlDiff)}日遅れ / ${item.deadline})</span>`;
         } else if (dlDiff === 0) {
           deadlineInfo = `<span style="color:#e02424; font-weight:800; background:#fff3cd; padding:3px 8px; border-radius:6px;">⚠️ 今日が締め切り！ (${item.deadline})</span>`;
         } else {
-          deadlineInfo = `<span style="color:#d97706; font-weight:800; background:#fffbeb; padding:3px 8px; border-radius:6px;">⏰ 期限: ${item.deadline} (あと${dlDiff}日)</span>`;
+          deadlineInfo = `<span style="color:#d97706; font-weight:800; background:#fffbeb; padding:3px 8px; border-radius:6px;">⏰ 期限日: ${item.deadline} (あと${dlDiff}日)</span>`;
         }
       }
 
@@ -646,8 +659,11 @@ function render() {
           <div class="item-card-row">
             <div class="item-info">
               <div style="font-weight:800; font-size:1.18rem;">${item.title}</div>
-              <div style="font-size:0.92rem; color:var(--text-sub); margin-top:4px;">${item.intervalDays}日ごと (前回: ${daysAgo}) ・ ${intervalStatus}</div>
-              ${deadlineInfo ? `<div style="font-size:0.92rem; margin-top:6px;">${deadlineInfo}</div>` : ''}
+              <div style="font-size:0.9rem; color:var(--text-sub); margin: 4px 0;">前回: ${daysAgoText}</div>
+              <div style="font-size:0.9rem; margin-top:4px; display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
+                ${intervalBadge}
+                ${deadlineInfo ? `<div>${deadlineInfo}</div>` : ''}
+              </div>
             </div>
             <div class="item-actions" style="flex-direction:column; gap:6px;">
               <button class="action-btn" style="width:100%; padding:8px;" onclick="doneRoutine('${item.id}')">やった！</button>
