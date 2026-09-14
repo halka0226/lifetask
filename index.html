@@ -13,32 +13,28 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <!-- 拡大縮小を完全に固定するviewport設定 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Life OS">
+  <link rel="manifest" href="manifest.json">
   <title>Life OS</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- えらい！ ポップアップ -->
   <div id="celebration-overlay">
     <div class="praise-badge">✨ えらい！ ✨</div>
   </div>
 
-  <!-- メインコンテンツ表示エリア -->
   <div id="main-container"></div>
 
-  <!-- できたこと一覧 フローティングボタン -->
   <button id="floating-done-btn" onclick="openDoneModal()">
     <span class="floating-icon">📋</span>
     <span class="floating-text">できたこと</span>
     <span id="floating-done-count" class="floating-badge">0</span>
   </button>
 
-  <!-- できたこと一覧 ポップアップモーダル -->
   <div id="done-modal-overlay" onclick="closeDoneModal(event)">
     <div class="done-modal-sheet" onclick="event.stopPropagation()">
       <div class="done-modal-header">
@@ -49,7 +45,18 @@
     </div>
   </div>
 
-  <!-- 下部固定ナビゲーションバー（4列×2段：定期のあとに全部） -->
+  <div id="datepicker-modal-overlay" onclick="closeDatePickerModal()">
+    <div class="datepicker-sheet" onclick="event.stopPropagation()">
+      <div id="datepicker-modal-title" style="font-size:1.2rem; font-weight:900; margin-bottom:12px;">📅 日付を選択</div>
+      <input type="date" id="datepicker-modal-input" class="form-control" style="font-size:1.3rem; padding:12px; margin-bottom:16px;">
+      <div style="display:flex; gap:8px;">
+        <button class="action-btn undo" style="flex:1; padding:14px; font-size:1.05rem;" onclick="closeDatePickerModal()">キャンセル</button>
+        <button class="submit-btn" style="flex:1.5; padding:14px; font-size:1.05rem;" onclick="applyDatePickerSelection()">決定</button>
+      </div>
+      <button id="datepicker-clear-btn" class="action-btn undo" style="width:100%; margin-top:8px; padding:10px; color:#ff4757; display:none;" onclick="clearDatePickerSelection()">期限を解除する</button>
+    </div>
+  </div>
+
   <nav class="bottom-nav">
     <button class="nav-btn active" data-tab="today">
       <span class="nav-icon">☀️</span>

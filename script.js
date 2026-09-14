@@ -1,4 +1,3 @@
-// --- 初期データ定義 ---
 const DEFAULT_DAILY = [
   { id: "target", name: "🎯 今日の目標", single: true, tasks: ["8,000歩達成"] },
   { id: "morning", name: "🌅 朝", tasks: ["起きる", "薬を飲む", "朝のサプリ", "顔を洗う", "保湿", "髪を乾かす"] },
@@ -65,7 +64,6 @@ const DEFAULT_DAILY = [
   }
 ];
 
-// 「たまに」の全項目
 const DEFAULT_OCCASIONAL = [
   { id: "occ_1", title: "美容室予約", completed: false, completedAt: null, lastDoneDate: null },
   { id: "occ_2", title: "まつげパーマ予約", completed: false, completedAt: null, lastDoneDate: null },
@@ -79,7 +77,6 @@ const DEFAULT_OCCASIONAL = [
   { id: "occ_9", title: "捨て活", completed: false, completedAt: null, lastDoneDate: null, memo: "", allowMemo: true }
 ];
 
-// 定期メンテナンス項目
 const DEFAULT_ROUTINES = [
   { id: "rt_nail", title: "セルフネイル付け替え", intervalDays: 14, lastDone: null, memo: "", allowMemo: true, deadline: null },
   { id: "rt_hair", title: "美容室", intervalDays: 60, lastDone: null, memo: "", allowMemo: true, deadline: null },
@@ -93,9 +90,10 @@ const DEFAULT_ROUTINES = [
   { id: "rt_checkup", title: "港区健康診断", intervalDays: 365, lastDone: null, memo: "", allowMemo: true, deadline: null }
 ];
 
-const STORAGE_KEY = "LIFE_OS_DATA_V31_CONFIRM";
+const STORAGE_KEY = "LIFE_OS_DATA_V37_CLEAN_HEADER";
 let state = {
   currentTab: "today",
+  viewDateStr: "",
   categories: [],
   todayLog: {},
   todayDateStr: "",
@@ -136,24 +134,61 @@ function getHolidayName(y, m, d, day) {
   return "";
 }
 
-function getFormattedDateHero() {
-  const d = new Date();
-  const y = d.getFullYear(), m = d.getMonth() + 1, date = d.getDate(), day = d.getDay();
-  const holiday = getHolidayName(y, m, date, day);
+// 🌟 「今日 / きのう / あした」ラベル判定 & 改行しない1行中央揃え
+function getFormattedDateHero(targetDateStr) {
+  const [y, m, d] = targetDateStr.split('-').map(Number);
+  const targetDate = new Date(y, m - 1, d);
+  const today = new Date(getTodayString());
+  const diffDays = Math.round((targetDate - today) / 86400000);
+
+  let label = "";
+  if (diffDays === 0) label = "今日";
+  else if (diffDays === -1) label = "きのう";
+  else if (diffDays === 1) label = "あした";
+
+  const day = targetDate.getDay();
+  const holiday = getHolidayName(y, m, d, day);
   const dayNames = ["日", "月", "火", "水", "木", "金", "土"];
   const dayClass = day === 0 ? "sun" : (day === 6 ? "sat" : "");
+  const isToday = diffDays === 0;
 
   return `
-    <div class="date-hero">
-      <div class="date-main">
-        <span class="date-year">${y}</span>
-        <span class="date-day-large">${m}月${date}日</span>
-        <span class="day-badge ${dayClass}">${dayNames[day]}曜日</span>
+    <div class="date-hero" style="display:flex; flex-direction:column; gap:4px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; width:100%; gap:4px;">
+        <button class="action-btn undo" style="font-size:1.1rem; padding:6px 10px; font-weight:900;" onclick="changeViewDate(-1)">◀</button>
+        
+        <div style="cursor:pointer; display:flex; flex-direction:column; align-items:center; padding:4px 8px; border-radius:12px; background:#fdf2f4; flex:1; min-width:0;" onclick="openDatePickerModal('navDate', null, '${targetDateStr}')">
+          ${label ? `<div style="font-size:0.92rem; font-weight:900; color:var(--primary); line-height:1.2;">${label}</div>` : ''}
+          <div style="display:flex; align-items:baseline; justify-content:center; gap:5px; white-space:nowrap; overflow:hidden;">
+            <span style="font-size:1rem; font-weight:800; color:var(--text-sub);">${y}年</span>
+            <span style="font-size:1.45rem; font-weight:900; letter-spacing:-0.02em;">${m}月${d}日</span>
+            <span class="day-badge ${dayClass}" style="font-size:0.9rem; padding:2px 6px;">${dayNames[day]}</span>
+          </div>
+        </div>
+        
+        <button class="action-btn undo" style="font-size:1.1rem; padding:6px 10px; font-weight:900;" onclick="changeViewDate(1)">▶</button>
       </div>
-      ${holiday ? `<div class="holiday-pill">🇯🇵 ${holiday}</div>` : ""}
+
+      <div style="display:flex; align-items:center; justify-content:${holiday && !isToday ? 'space-between' : 'center'}; width:100%; margin-top:2px;">
+        ${holiday ? `<div class="holiday-pill" style="font-size:0.85rem; padding:2px 10px;">🇯🇵 ${holiday}</div>` : `<div></div>`}
+        ${!isToday ? `<button class="action-btn" style="padding:4px 10px; font-size:0.85rem;" onclick="jumpToTodayDate()">今日に戻る ↩</button>` : `<div></div>`}
+      </div>
     </div>
   `;
 }
+
+window.changeViewDate = function(offsetDays) {
+  const [y, m, d] = state.viewDateStr.split('-').map(Number);
+  const curr = new Date(y, m - 1, d);
+  curr.setDate(curr.getDate() + offsetDays);
+  state.viewDateStr = `${curr.getFullYear()}-${String(curr.getMonth() + 1).padStart(2, '0')}-${String(curr.getDate()).padStart(2, '0')}`;
+  render();
+};
+
+window.jumpToTodayDate = function() {
+  state.viewDateStr = getTodayString();
+  render();
+};
 
 function recordDayHistory(dateStr) {
   if (!dateStr) return;
@@ -190,6 +225,8 @@ function loadState() {
     if (saved) state = JSON.parse(saved);
   } catch(e) {}
   const today = getTodayString();
+  if (!state.viewDateStr) state.viewDateStr = today;
+
   if (!state.categories || !state.categories.length) {
     let count = 1;
     state.categories = DEFAULT_DAILY.map(c => ({
@@ -224,6 +261,7 @@ function loadState() {
     state.todayDateStr = today;
     state.todayLog = {};
     state.todayDiary = "";
+    state.viewDateStr = today;
     saveState();
   }
 }
@@ -254,15 +292,24 @@ window.switchTab = function(tab) {
   render();
   window.scrollTo({ top: 0, behavior: 'auto' });
 };
-function getCompletedTaskList() {
+function getCompletedTaskList(targetDateStr) {
   const list = [];
-  state.categories.forEach(cat => {
-    cat.tasks.forEach(t => {
-      if (state.todayLog[t.id]) {
-        list.push({ cat: cat.name, title: t.title, time: state.todayLog[t.id] });
-      }
+  const isToday = !targetDateStr || targetDateStr === getTodayString();
+  
+  if (isToday) {
+    state.categories.forEach(cat => {
+      cat.tasks.forEach(t => {
+        if (state.todayLog[t.id]) {
+          list.push({ cat: cat.name, title: t.title, time: state.todayLog[t.id] });
+        }
+      });
     });
-  });
+  } else {
+    const hist = state.history && state.history[targetDateStr];
+    if (hist && hist.tasks) {
+      return [...hist.tasks];
+    }
+  }
   list.sort((a, b) => a.time.localeCompare(b.time));
   return list;
 }
@@ -270,7 +317,7 @@ function getCompletedTaskList() {
 function updateFloatingBadge() {
   const countEl = document.getElementById("floating-done-count");
   if (countEl) {
-    const list = getCompletedTaskList();
+    const list = getCompletedTaskList(state.viewDateStr);
     countEl.textContent = list.length;
   }
 }
@@ -281,11 +328,11 @@ window.openDoneModal = function() {
   const titleEl = document.getElementById("done-modal-title");
   if (!overlay || !listEl) return;
 
-  const list = getCompletedTaskList();
-  if (titleEl) titleEl.textContent = `📋 今日できたこと (${list.length}個)`;
+  const list = getCompletedTaskList(state.viewDateStr);
+  if (titleEl) titleEl.textContent = `📋 ${state.viewDateStr} (${list.length}個)`;
 
   if (list.length === 0) {
-    listEl.innerHTML = `<div style="text-align:center; color:var(--text-sub); font-size:1.05rem; padding:28px 0;">まだ完了したタスクはありません✨<br>マイペースに進めていきましょう！</div>`;
+    listEl.innerHTML = `<div style="text-align:center; color:var(--text-sub); font-size:1.05rem; padding:28px 0;">完了したタスクはありません✨</div>`;
   } else {
     let h = "";
     list.forEach(item => {
@@ -309,14 +356,87 @@ window.closeDoneModal = function(e) {
   if (overlay) overlay.classList.remove("active");
 };
 
+let datePickerTarget = null;
+
+window.openDatePickerModal = function(type, id, currentVal) {
+  datePickerTarget = { type, id };
+  const overlay = document.getElementById("datepicker-modal-overlay");
+  const input = document.getElementById("datepicker-modal-input");
+  const title = document.getElementById("datepicker-modal-title");
+  const clearBtn = document.getElementById("datepicker-clear-btn");
+  if (!overlay || !input) return;
+
+  input.value = currentVal || getTodayString();
+  if (type === 'navDate') {
+    title.textContent = "📅 表示する日付を選択";
+    clearBtn.style.display = "none";
+  } else if (type === 'routineDeadline') {
+    title.textContent = "⏰ 締め切り日をカレンダーで指定";
+    clearBtn.style.display = "block";
+  } else {
+    title.textContent = "📅 実施日をカレンダーで指定";
+    clearBtn.style.display = "none";
+  }
+  overlay.classList.add("active");
+};
+
+window.closeDatePickerModal = function() {
+  const overlay = document.getElementById("datepicker-modal-overlay");
+  if (overlay) overlay.classList.remove("active");
+  datePickerTarget = null;
+};
+
+window.applyDatePickerSelection = function() {
+  if (!datePickerTarget) return;
+  const input = document.getElementById("datepicker-modal-input");
+  const val = input ? input.value : "";
+  if (!val) return;
+
+  const { type, id } = datePickerTarget;
+  if (type === 'navDate') {
+    state.viewDateStr = val;
+  } else if (type === 'occDone') {
+    const item = state.occasional.find(o => o.id === id);
+    if (item) item.lastDoneDate = val;
+    saveState();
+  } else if (type === 'routineDone') {
+    const item = state.routines.find(r => r.id === id);
+    if (item) item.lastDone = val;
+    saveState();
+  } else if (type === 'routineDeadline') {
+    const item = state.routines.find(r => r.id === id);
+    if (item) item.deadline = val;
+    saveState();
+  }
+
+  render();
+  closeDatePickerModal();
+};
+
+window.clearDatePickerSelection = function() {
+  if (!datePickerTarget) return;
+  const { type, id } = datePickerTarget;
+  if (type === 'routineDeadline') {
+    const item = state.routines.find(r => r.id === id);
+    if (item) item.deadline = null;
+    saveState();
+    render();
+  }
+  closeDatePickerModal();
+};
+
 window.toggleHistoryDate = function(dateStr) {
   if (!state.openHistoryDates) state.openHistoryDates = {};
   state.openHistoryDates[dateStr] = !state.openHistoryDates[dateStr];
   render();
 };
 
-// チェックを外す時だけ確認ダイアログ
 window.toggleTask = function(id) {
+  const isToday = state.viewDateStr === getTodayString();
+  if (!isToday) {
+    alert("過去（未来）の日付のタスクは閲覧専用です。「今日」に戻ってチェックしてください。");
+    return;
+  }
   if (state.todayLog[id]) {
     const ok = confirm("チェックをはずしますか？");
     if (!ok) return;
@@ -331,6 +451,11 @@ window.toggleTask = function(id) {
 };
 
 window.batchComplete = function(catId) {
+  const isToday = state.viewDateStr === getTodayString();
+  if (!isToday) {
+    alert("過去（未来）の日付のタスクは閲覧専用です。");
+    return;
+  }
   const cat = state.categories.find(c => c.id === catId);
   if (!cat) return;
   const now = getCurrentTimeStr();
@@ -342,7 +467,16 @@ window.batchComplete = function(catId) {
   window.silentSyncToSpreadsheet();
 };
 
-window.onDiaryInput = val => { state.todayDiary = val; saveState(); };
+window.onDiaryInput = val => {
+  const isToday = state.viewDateStr === getTodayString();
+  if (!isToday) {
+    if (!state.history[state.viewDateStr]) state.history[state.viewDateStr] = { done: 0, diary: "", tasks: [] };
+    state.history[state.viewDateStr].diary = val;
+  } else {
+    state.todayDiary = val;
+  }
+  saveState();
+};
 
 window.toggleOccasional = function(id) {
   const item = state.occasional.find(o => o.id === id);
@@ -375,17 +509,6 @@ window.editOccasionalMemo = function(id) {
   if (m !== null) { item.memo = m.trim(); saveState(); render(); }
 };
 
-window.setOccasionalLastDone = function(id) {
-  const item = state.occasional.find(o => o.id === id);
-  if (!item) return;
-  const val = prompt(`「${item.title}」を過去に実施した日付 (YYYY-MM-DD):`, item.lastDoneDate || getTodayString());
-  if (val && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
-    item.lastDoneDate = val; saveState(); render();
-  } else if (val !== null) {
-    alert("「2026-09-10」の形式で入力してください");
-  }
-};
-
 window.doneRoutine = function(id) {
   const item = state.routines.find(r => r.id === id);
   if (!item) return;
@@ -409,35 +532,6 @@ window.editRoutineInterval = function(id) {
   if (!item) return;
   const val = prompt(`「${item.title}」の周期日数:`, item.intervalDays);
   if (val && !isNaN(val) && Number(val) > 0) { item.intervalDays = parseInt(val, 10); saveState(); render(); }
-};
-
-window.setRoutineLastDone = function(id) {
-  const item = state.routines.find(r => r.id === id);
-  if (!item) return;
-  const val = prompt(`「${item.title}」を前回実施した日付 (YYYY-MM-DD):`, item.lastDone || getTodayString());
-  if (val && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
-    item.lastDone = val; saveState(); render();
-  } else if (val !== null) {
-    alert("「2026-09-10」の形式で入力してください");
-  }
-};
-
-window.setRoutineDeadline = function(id) {
-  const item = state.routines.find(r => r.id === id);
-  if (!item) return;
-  const val = prompt(`「${item.title}」の締め切り日を入力 (YYYY-MM-DD / 空欄で解除):`, item.deadline || "");
-  if (val === null) return;
-  const trimmed = val.trim();
-  if (trimmed === "") {
-    item.deadline = null;
-  } else if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
-    item.deadline = trimmed;
-  } else {
-    alert("「2026-11-30」の形式で入力してください");
-    return;
-  }
-  saveState();
-  render();
 };
 
 window.addNewDailyTask = function() {
@@ -514,20 +608,30 @@ function render() {
 
   updateFloatingBadge();
 
-  // --- ☀️ 今日（2列グリッド配置） ---
   if (tab === "today") {
+    const targetDateStr = state.viewDateStr || getTodayString();
+    const isToday = targetDateStr === getTodayString();
+    
+    const histRecord = (!isToday && state.history) ? state.history[targetDateStr] : null;
+    const pastTasksMap = {};
+    if (histRecord && histRecord.tasks) {
+      histRecord.tasks.forEach(t => { pastTasksMap[t.title] = t.time; });
+    }
+
     let done = 0;
-    state.categories.forEach(cat => cat.tasks.forEach(t => {
-      if (state.todayLog[t.id]) done++;
-    }));
+    if (isToday) {
+      state.categories.forEach(cat => cat.tasks.forEach(t => { if (state.todayLog[t.id]) done++; }));
+    } else {
+      done = histRecord ? (histRecord.done || 0) : 0;
+    }
 
     let h = `
       <div class="status-card">
-        ${getFormattedDateHero()}
+        ${getFormattedDateHero(targetDateStr)}
         <div class="status-counter-row">
           <div class="progress-count-simple">
             <span>${done}</span>
-            <span class="progress-count-sub">個 達成中 ✨</span>
+            <span class="progress-count-sub">個 達成 ${isToday ? '中 ✨' : 'でした'}</span>
           </div>
         </div>
       </div>
@@ -539,30 +643,31 @@ function render() {
         <div class="category-group">
           <div class="category-header">
             <span>${cat.name}</span>
-            ${!isSingle ? `<button class="batch-btn" onclick="batchComplete('${cat.id}')">まとめて完了</button>` : ''}
+            ${(isToday && !isSingle) ? `<button class="batch-btn" onclick="batchComplete('${cat.id}')">まとめて完了</button>` : ''}
           </div>
           <div class="task-grid-container">
       `;
       cat.tasks.forEach(t => {
-        const isDone = !!state.todayLog[t.id];
+        const isDone = isToday ? !!state.todayLog[t.id] : !!pastTasksMap[t.title];
+        const doneTime = isToday ? (state.todayLog[t.id] || '') : (pastTasksMap[t.title] || '');
         h += `
           <div class="task-item ${isDone ? 'checked' : ''}" onclick="toggleTask('${t.id}')">
             <div class="task-checkbox">${isDone ? '✔' : ''}</div>
             <div class="task-title">${t.title}</div>
-            <div class="task-time">${state.todayLog[t.id] || ''}</div>
+            <div class="task-time">${doneTime}</div>
           </div>
         `;
       });
       h += `</div></div>`;
     });
 
+    const diaryContent = isToday ? (state.todayDiary || "") : (histRecord ? (histRecord.diary || "") : "");
     h += `<div class="status-card" style="margin-top:14px;">
-      <div style="font-size:1.15rem; font-weight:800; margin-bottom:8px;">📝 今日のメモ・日記</div>
-      <textarea class="form-control" rows="3" placeholder="体調、気づき、ひと言などを自由に記録..." oninput="onDiaryInput(this.value)" style="resize:none; line-height:1.4;">${state.todayDiary || ""}</textarea>
+      <div style="font-size:1.15rem; font-weight:800; margin-bottom:8px;">📝 ${isToday ? '今日' : targetDateStr}のメモ・日記</div>
+      <textarea class="form-control" rows="3" placeholder="体調、気づき、ひと言などを自由に記録..." oninput="onDiaryInput(this.value)" style="resize:none; line-height:1.4;" ${!isToday ? 'readonly' : ''}>${diaryContent}</textarea>
     </div>`;
     c.innerHTML = h;
 
-  // --- 🧹 掃除・空き時間（2列グリッド） ---
   } else if (tab === "freetime") {
     const cleanCat = state.categories.find(c => c.id === "cleaning");
     let h = `<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">🧹 掃除・空き時間タスク</h2>`;
@@ -594,7 +699,6 @@ function render() {
     </div>`;
     c.innerHTML = h;
 
-  // --- 💡 たまに ---
   } else if (tab === "occasional") {
     let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">💡 たまにやるタスク</h2>';
     const now = new Date(getTodayString());
@@ -609,7 +713,7 @@ function render() {
         <div style="font-size:0.92rem; color:var(--text-sub); margin-top:4px;">前回：${info}</div>
         ${item.completedAt ? `<div style="font-size:0.88rem; color:var(--primary); margin-top:2px;">今回完了: ${item.completedAt}</div>` : ''}</div>
         <div class="item-actions">
-          <button class="action-btn undo" style="padding:6px 10px; font-size:0.88rem;" onclick="setOccasionalLastDone('${item.id}')">📅 日付</button>
+          <button class="action-btn undo" style="padding:6px 10px; font-size:0.88rem;" onclick="openDatePickerModal('occDone', '${item.id}', '${item.lastDoneDate || ''}')">📅 日付</button>
           ${item.allowMemo ? `<button class="action-btn undo" style="padding:6px 10px; font-size:0.88rem;" onclick="editOccasionalMemo('${item.id}')">📝</button>` : ''}
           <button class="${item.completed ? 'action-btn undo' : 'action-btn'}" onclick="toggleOccasional('${item.id}')">${item.completed ? '戻す' : '完了'}</button>
         </div>
@@ -617,7 +721,6 @@ function render() {
     });
     c.innerHTML = h;
 
-  // --- 🔄 定期（周期の残り日数を表示） ---
   } else if (tab === "routine") {
     let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">🔄 定期メンテナンス</h2>';
     const now = new Date(getTodayString());
@@ -667,8 +770,8 @@ function render() {
             <div class="item-actions" style="flex-direction:column; gap:6px;">
               <button class="action-btn" style="width:100%; padding:8px;" onclick="doneRoutine('${item.id}')">やった！</button>
               <div style="display:flex; gap:4px;">
-                <button class="action-btn undo" style="padding:4px 7px; font-size:0.8rem;" onclick="setRoutineLastDone('${item.id}')">📅 日付</button>
-                <button class="action-btn undo" style="padding:4px 7px; font-size:0.8rem;" onclick="setRoutineDeadline('${item.id}')">⏰ 期限</button>
+                <button class="action-btn undo" style="padding:4px 7px; font-size:0.8rem;" onclick="openDatePickerModal('routineDone', '${item.id}', '${item.lastDone || ''}')">📅 日付</button>
+                <button class="action-btn undo" style="padding:4px 7px; font-size:0.8rem;" onclick="openDatePickerModal('routineDeadline', '${item.id}', '${item.deadline || ''}')">⏰ 期限</button>
                 ${item.allowMemo ? `<button class="action-btn undo" style="padding:4px 7px; font-size:0.8rem;" onclick="editRoutineMemo('${item.id}')">メモ</button>` : ''}
                 <button class="action-btn undo" style="padding:4px 7px; font-size:0.8rem;" onclick="editRoutineInterval('${item.id}')">周期</button>
               </div>
@@ -680,7 +783,6 @@ function render() {
     });
     c.innerHTML = h;
 
-  // --- 📋 全部 ---
   } else if (tab === "all") {
     let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">📋 毎日のタスク</h2>';
     state.categories.forEach(cat => {
@@ -692,7 +794,6 @@ function render() {
     });
     c.innerHTML = h;
 
-  // --- ➕ 追加 ---
   } else if (tab === "add") {
     c.innerHTML = `<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">➕ タスク追加</h2>
       <div class="status-card">
@@ -701,7 +802,6 @@ function render() {
         <button class="submit-btn" onclick="addNewDailyTask()">追加する</button>
       </div>`;
 
-  // --- 📊 履歴 ---
   } else if (tab === "history") {
     const wStats = getStatsSummary(7);
     const mStats = getStatsSummary(30);
@@ -727,7 +827,7 @@ function render() {
     `;
 
     const todayStr = getTodayString();
-    const todayTasks = getCompletedTaskList();
+    const todayTasks = getCompletedTaskList(todayStr);
     const allHistory = { ...(state.history || {}) };
     allHistory[todayStr] = {
       done: todayTasks.length,
@@ -787,7 +887,6 @@ function render() {
     }
     c.innerHTML = h;
 
-  // --- ⚙️ 設定 ---
   } else if (tab === "settings") {
     c.innerHTML = `<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">⚙️ 設定</h2>
       <div class="status-card">
@@ -812,7 +911,6 @@ function setupNavEvents() {
   });
 }
 
-// ピンチズーム・ダブルタップ拡大防止
 document.addEventListener("gesturestart", e => e.preventDefault(), { passive: false });
 document.addEventListener("gesturechange", e => e.preventDefault(), { passive: false });
 document.addEventListener("gestureend", e => e.preventDefault(), { passive: false });
@@ -825,6 +923,12 @@ document.addEventListener("touchend", e => {
   }
   lastTouchEnd = now;
 }, { passive: false });
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
 
 loadState();
 render();
