@@ -1,65 +1,28 @@
-﻿// バージョン識別子
-const CACHE_NAME = 'life-os-offline-v1';
+﻿// バージョンを更新して古いキャッシュを全破棄
+const CACHE_NAME = 'life-os-refresh-' + Date.now();
 
-// オフライン時に必要なファイル一覧
-const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './style.css',
-  './script.js',
-  './manifest.json'
-];
-
-// インストール時に基本アセットを保存
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
-  );
+  // 待機時間をスキップして即座に有効化
   self.skipWaiting();
 });
 
-// 古いバージョンのキャッシュを自動クリーンアップ
 self.addEventListener('activate', event => {
   event.waitUntil(
+    // 既存の古いキャッシュをすべて削除
     caches.keys().then(keys => {
-      return Promise.all(
-        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-      );
+      return Promise.all(keys.map(k => caches.delete(k)));
+    }).then(() => {
+      // 開いているすべてのタブに即時適用
+      return self.clients.claim();
     })
   );
-  self.clients.claim();
 });
 
-// 🌟 ネットワーク優先（通信があれば最新版を取得、圏外ならキャッシュを開く）
+// キャッシュを無視して必ず最新のサーバーから直接取得
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
-
-  // Googleスプレッドシート（GAS）への通信はキャッシュせず素通し
-  if (event.request.url.includes('script.google.com')) {
-    return;
-  }
-
   event.respondWith(
-    fetch(event.request)
-      .then(networkResponse => {
-        // 通信が成功したらキャッシュを最新内容で更新
-        if (networkResponse && networkResponse.status === 200) {
-          const resClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, resClone);
-          });
-        }
-        return networkResponse;
-      })
-      .catch(() => {
-        // オフライン（電波がない）時はキャッシュから画面を開く
-        return caches.match(event.request).then(cachedResponse => {
-          if (cachedResponse) return cachedResponse;
-          // アドレス末尾のズレ対策（ルートへフォールバック）
-          return caches.match('./') || caches.match('./index.html');
-        });
-      })
+    fetch(event.request, { cache: 'no-store' }).catch(() => {
+      return caches.match(event.request);
+    })
   );
 });
