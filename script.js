@@ -1,4 +1,6 @@
-// 大カテゴリ・中カテゴリ・小タスク・メモの階層データ
+const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbzZjKeZLlq6VBQpUiFLAcHf_92mU2e5OkqSRtYk26uvKLVZmagRKYggdJa5DTBrr8iZ/exec";
+const STORAGE_KEY = "LIFE_OS_DATA_V54_SAFE";
+
 const DEFAULT_HIERARCHY = [
   {
     id: "major_daily",
@@ -155,10 +157,6 @@ const DEFAULT_ROUTINES = [
   { id: "rt_thyroid", title: "伊東病院で甲状腺検査", intervalDays: 180, lastDone: null, memo: "", allowMemo: true, deadline: null, prevDone: null, prevMemo: "" },
   { id: "rt_checkup", title: "港区健康診断", intervalDays: 365, lastDone: null, memo: "", allowMemo: true, deadline: null, prevDone: null, prevMemo: "" }
 ];
-// 🌟 デプロイURLを直接埋め込み
-const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbzZjKeZLlq6VBQpUiFLAcHf_92mU2e5OkqSRtYk26uvKLVZmagRKYggdJa5DTBrr8iZ/exec";
-
-const STORAGE_KEY = "LIFE_OS_DATA_V48_DEPLOYED";
 let state = {
   currentTab: "today",
   viewDateStr: "",
@@ -223,7 +221,6 @@ function getFormattedDateHero(targetDateStr) {
     <div class="date-hero" style="display:flex; flex-direction:column; gap:4px;">
       <div style="display:flex; align-items:center; justify-content:space-between; width:100%; gap:4px;">
         <button class="action-btn undo" style="font-size:1.1rem; padding:6px 10px; font-weight:900;" onclick="changeViewDate(-1)">◀</button>
-        
         <div style="cursor:pointer; display:flex; flex-direction:column; align-items:center; padding:4px 8px; border-radius:12px; background:#fdf2f4; flex:1; min-width:0;" onclick="openDatePickerModal('navDate', null, '${targetDateStr}')">
           ${label ? `<div style="font-size:0.92rem; font-weight:900; color:var(--primary); line-height:1.2;">${label}</div>` : ''}
           <div style="display:flex; align-items:baseline; justify-content:center; gap:5px; white-space:nowrap; overflow:hidden;">
@@ -232,10 +229,8 @@ function getFormattedDateHero(targetDateStr) {
             <span class="day-badge ${dayClass}" style="font-size:0.9rem; padding:2px 6px;">${dayNames[day]}</span>
           </div>
         </div>
-        
         <button class="action-btn undo" style="font-size:1.1rem; padding:6px 10px; font-weight:900;" onclick="changeViewDate(1)">▶</button>
       </div>
-
       <div style="display:flex; align-items:center; justify-content:${holiday && !isToday ? 'space-between' : 'center'}; width:100%; margin-top:2px;">
         ${holiday ? `<div class="holiday-pill" style="font-size:0.85rem; padding:2px 10px;">🇯🇵 ${holiday}</div>` : `<div></div>`}
         ${!isToday ? `<button class="action-btn" style="padding:4px 10px; font-size:0.85rem;" onclick="jumpToTodayDate()">今日に戻る ↩</button>` : `<div></div>`}
@@ -256,10 +251,10 @@ window.jumpToTodayDate = function() {
   state.viewDateStr = getTodayString();
   render();
 };
-
 function getAllTasksFlat() {
   const list = [];
-  (state.majors || []).forEach(major => {
+  if (!state.majors || !Array.isArray(state.majors)) return list;
+  state.majors.forEach(major => {
     (major.groups || []).forEach(group => {
       (group.tasks || []).forEach(task => {
         list.push({ majorName: major.name, groupName: group.name, ...task });
@@ -273,7 +268,7 @@ function recordDayHistory(dateStr) {
   if (!dateStr) return;
   const completedTasks = [];
   getAllTasksFlat().forEach(t => {
-    if (state.todayLog[t.id]) {
+    if (state.todayLog && state.todayLog[t.id]) {
       completedTasks.push({ cat: `${t.majorName} > ${t.groupName}`, title: t.title, time: state.todayLog[t.id] });
     }
   });
@@ -295,39 +290,35 @@ function saveState() {
 }
 
 function loadState() {
+  let loaded = false;
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) state = JSON.parse(saved);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && Array.isArray(parsed.majors) && parsed.majors.length > 0) {
+        state = parsed;
+        loaded = true;
+      }
+    }
   } catch(e) {}
-  const today = getTodayString();
-  if (!state.viewDateStr) state.viewDateStr = today;
 
-  if (!state.majors || !state.majors.length) {
-    state.majors = DEFAULT_HIERARCHY;
-    state.occasional = DEFAULT_OCCASIONAL;
-    state.routines = DEFAULT_ROUTINES;
+  const today = getTodayString();
+  if (!loaded) {
+    state.majors = JSON.parse(JSON.stringify(DEFAULT_HIERARCHY));
+    state.occasional = JSON.parse(JSON.stringify(DEFAULT_OCCASIONAL));
+    state.routines = JSON.parse(JSON.stringify(DEFAULT_ROUTINES));
     state.todayLog = {};
     state.todayDateStr = today;
     state.todayDiary = "";
     state.history = {};
     state.openHistoryDates = {};
-  } else {
-    DEFAULT_OCCASIONAL.forEach(defItem => {
-      if (!state.occasional.some(o => o.id === defItem.id || o.title === defItem.title)) {
-        state.occasional.push(defItem);
-      }
-    });
-    DEFAULT_ROUTINES.forEach(defItem => {
-      const existing = state.routines.find(r => r.id === defItem.id);
-      if (!existing) {
-        state.routines.push(defItem);
-      } else if (["rt_nail", "rt_hair", "rt_dental", "rt_lash"].includes(defItem.id)) {
-        existing.intervalDays = defItem.intervalDays;
-      }
-    });
   }
 
+  if (!state.viewDateStr) state.viewDateStr = today;
+  if (!state.todayLog) state.todayLog = {};
+  if (!state.history) state.history = {};
   if (!state.openHistoryDates) state.openHistoryDates = {};
+
   if (state.todayDateStr !== today) {
     recordDayHistory(state.todayDateStr);
     state.todayDateStr = today;
@@ -341,11 +332,7 @@ function loadState() {
 let praiseTimer = null;
 window.triggerPraise = function(isMultiple = false) {
   if (navigator.vibrate) {
-    if (isMultiple) {
-      navigator.vibrate([40, 50, 40]);
-    } else {
-      navigator.vibrate(40);
-    }
+    navigator.vibrate(isMultiple ? [40, 50, 40] : 40);
   }
 
   const el = document.getElementById("celebration-overlay");
@@ -378,15 +365,13 @@ function getCompletedTaskList(targetDateStr) {
   
   if (isToday) {
     getAllTasksFlat().forEach(t => {
-      if (state.todayLog[t.id]) {
+      if (state.todayLog && state.todayLog[t.id]) {
         list.push({ cat: `${t.groupName}`, title: t.title, time: state.todayLog[t.id] });
       }
     });
   } else {
     const hist = state.history && state.history[targetDateStr];
-    if (hist && hist.tasks) {
-      return [...hist.tasks];
-    }
+    if (hist && hist.tasks) return [...hist.tasks];
   }
   list.sort((a, b) => a.time.localeCompare(b.time));
   return list;
@@ -394,10 +379,7 @@ function getCompletedTaskList(targetDateStr) {
 
 function updateFloatingBadge() {
   const countEl = document.getElementById("floating-done-count");
-  if (countEl) {
-    const list = getCompletedTaskList(state.viewDateStr);
-    countEl.textContent = list.length;
-  }
+  if (countEl) countEl.textContent = getCompletedTaskList(state.viewDateStr).length;
 }
 
 window.openDoneModal = function() {
@@ -447,17 +429,9 @@ window.openDatePickerModal = function(type, id, currentVal) {
   if (type === 'navDate') {
     title.textContent = "📅 表示する日付を選択";
     clearBtn.style.display = "none";
-  } else if (type === 'routineDeadline') {
-    title.textContent = "⏰ 締め切り日をカレンダーで指定";
-    clearBtn.textContent = "期限を解除する";
-    clearBtn.style.display = "block";
-  } else if (type === 'routineDone') {
-    title.textContent = "📅 実施日をカレンダーで指定";
-    clearBtn.textContent = "実施日を解除する（未実施に戻す）";
-    clearBtn.style.display = "block";
-  } else if (type === 'occDone') {
-    title.textContent = "📅 実施日をカレンダーで指定";
-    clearBtn.textContent = "実施日を解除する（未実施に戻す）";
+  } else {
+    title.textContent = type === 'routineDeadline' ? "⏰ 締め切り日を指定" : "📅 実施日を指定";
+    clearBtn.textContent = type === 'routineDeadline' ? "期限を解除する" : "実施日を解除する";
     clearBtn.style.display = "block";
   }
   overlay.classList.add("active");
@@ -476,24 +450,18 @@ window.applyDatePickerSelection = function() {
   if (!val) return;
 
   const { type, id } = datePickerTarget;
-  if (type === 'navDate') {
-    state.viewDateStr = val;
-  } else if (type === 'occDone') {
+  if (type === 'navDate') state.viewDateStr = val;
+  else if (type === 'occDone') {
     const item = state.occasional.find(o => o.id === id);
     if (item) item.lastDoneDate = val;
-    saveState();
   } else if (type === 'routineDone') {
     const item = state.routines.find(r => r.id === id);
     if (item) item.lastDone = val;
-    saveState();
   } else if (type === 'routineDeadline') {
     const item = state.routines.find(r => r.id === id);
     if (item) item.deadline = val;
-    saveState();
   }
-
-  render();
-  closeDatePickerModal();
+  saveState(); render(); closeDatePickerModal();
 };
 
 window.clearDatePickerSelection = function() {
@@ -509,9 +477,7 @@ window.clearDatePickerSelection = function() {
     const item = state.occasional.find(o => o.id === id);
     if (item) item.lastDoneDate = null;
   }
-  saveState();
-  render();
-  closeDatePickerModal();
+  saveState(); render(); closeDatePickerModal();
 };
 
 let intervalEditTargetId = null;
@@ -519,7 +485,6 @@ window.openIntervalModal = function(id) {
   intervalEditTargetId = id;
   const item = state.routines.find(r => r.id === id);
   if (!item) return;
-
   const overlay = document.getElementById("interval-modal-overlay");
   const input = document.getElementById("interval-modal-input");
   const title = document.getElementById("interval-modal-title");
@@ -539,11 +504,7 @@ window.closeIntervalModal = function() {
 window.setIntervalFromSlot = function(days) {
   if (!intervalEditTargetId) return;
   const item = state.routines.find(r => r.id === intervalEditTargetId);
-  if (item) {
-    item.intervalDays = parseInt(days, 10);
-    saveState();
-    render();
-  }
+  if (item) { item.intervalDays = parseInt(days, 10); saveState(); render(); }
   closeIntervalModal();
 };
 
@@ -553,17 +514,12 @@ window.applyIntervalCustom = function() {
   const val = input ? input.value.trim() : "";
   if (val && !isNaN(val) && Number(val) > 0) {
     const item = state.routines.find(r => r.id === intervalEditTargetId);
-    if (item) {
-      item.intervalDays = parseInt(val, 10);
-      saveState();
-      render();
-    }
+    if (item) { item.intervalDays = parseInt(val, 10); saveState(); render(); }
     closeIntervalModal();
   } else {
     alert("1以上の正しい日数を入力してください");
   }
 };
-
 window.toggleHistoryDate = function(dateStr) {
   if (!state.openHistoryDates) state.openHistoryDates = {};
   state.openHistoryDates[dateStr] = !state.openHistoryDates[dateStr];
@@ -571,28 +527,22 @@ window.toggleHistoryDate = function(dateStr) {
 };
 
 window.toggleTask = function(id) {
-  const isToday = state.viewDateStr === getTodayString();
-  if (!isToday) {
-    alert("過去（未来）の日付のタスクは閲覧専用です。「今日」に戻ってチェックしてください。");
-    return;
+  if (state.viewDateStr !== getTodayString()) {
+    return alert("過去・未来のタスクは閲覧専用です。「今日」に戻ってチェックしてください。");
   }
-  if (state.todayLog[id]) {
-    const ok = confirm("チェックをはずしますか？");
-    if (!ok) return;
+  if (state.todayLog && state.todayLog[id]) {
+    if (!confirm("チェックをはずしますか？")) return;
     delete state.todayLog[id];
   } else {
+    if (!state.todayLog) state.todayLog = {};
     state.todayLog[id] = getCurrentTimeStr();
     window.triggerPraise(false);
   }
-  saveState(); 
-  render();
-  window.silentSyncToSpreadsheet();
+  saveState(); render(); window.silentSyncToSpreadsheet();
 };
 
 window.batchComplete = function(groupId) {
-  const isToday = state.viewDateStr === getTodayString();
-  if (!isToday) return alert("過去（未来）の日付のタスクは閲覧専用です。");
-
+  if (state.viewDateStr !== getTodayString()) return alert("過去・未来のタスクは閲覧専用です。");
   let foundGroup = null;
   (state.majors || []).forEach(m => {
     const g = (m.groups || []).find(x => x.id === groupId);
@@ -602,21 +552,16 @@ window.batchComplete = function(groupId) {
 
   const now = getCurrentTimeStr();
   let added = false;
+  if (!state.todayLog) state.todayLog = {};
   foundGroup.tasks.forEach(t => {
-    if (!state.todayLog[t.id]) {
-      state.todayLog[t.id] = now;
-      added = true;
-    }
+    if (!state.todayLog[t.id]) { state.todayLog[t.id] = now; added = true; }
   });
   if (added) window.triggerPraise(true);
-  saveState(); 
-  render();
-  window.silentSyncToSpreadsheet();
+  saveState(); render(); window.silentSyncToSpreadsheet();
 };
 
 window.onDiaryInput = val => {
-  const isToday = state.viewDateStr === getTodayString();
-  if (!isToday) {
+  if (state.viewDateStr !== getTodayString()) {
     if (!state.history[state.viewDateStr]) state.history[state.viewDateStr] = { done: 0, diary: "", tasks: [] };
     state.history[state.viewDateStr].diary = val;
   } else {
@@ -624,6 +569,7 @@ window.onDiaryInput = val => {
   }
   saveState();
 };
+
 window.renameTask = function(taskId) {
   let targetTask = null;
   (state.majors || []).forEach(m => (m.groups || []).forEach(g => {
@@ -631,13 +577,8 @@ window.renameTask = function(taskId) {
     if (t) targetTask = t;
   }));
   if (!targetTask) return;
-
   const val = prompt("タスク名を変更:", targetTask.title);
-  if (val !== null && val.trim()) {
-    targetTask.title = val.trim();
-    saveState();
-    render();
-  }
+  if (val !== null && val.trim()) { targetTask.title = val.trim(); saveState(); render(); }
 };
 
 window.editTaskMemo = function(taskId) {
@@ -647,13 +588,8 @@ window.editTaskMemo = function(taskId) {
     if (t) targetTask = t;
   }));
   if (!targetTask) return;
-
-  const val = prompt(`「${targetTask.title}」のメモ（空欄OK）:`, targetTask.memo || "");
-  if (val !== null) {
-    targetTask.memo = val.trim();
-    saveState();
-    render();
-  }
+  const val = prompt(`「${targetTask.title}」のメモ:`, targetTask.memo || "");
+  if (val !== null) { targetTask.memo = val.trim(); saveState(); render(); }
 };
 
 window.moveTaskOrder = function(groupId, taskId, direction) {
@@ -663,19 +599,14 @@ window.moveTaskOrder = function(groupId, taskId, direction) {
     if (g) targetGroup = g;
   });
   if (!targetGroup) return;
-
-  const index = targetGroup.tasks.findIndex(t => t.id === taskId);
-  if (index === -1) return;
-
-  const newIndex = index + direction;
-  if (newIndex < 0 || newIndex >= targetGroup.tasks.length) return;
-
-  const temp = targetGroup.tasks[index];
-  targetGroup.tasks[index] = targetGroup.tasks[newIndex];
-  targetGroup.tasks[newIndex] = temp;
-
-  saveState();
-  render();
+  const idx = targetGroup.tasks.findIndex(t => t.id === taskId);
+  if (idx === -1) return;
+  const newIdx = idx + direction;
+  if (newIdx < 0 || newIdx >= targetGroup.tasks.length) return;
+  const tmp = targetGroup.tasks[idx];
+  targetGroup.tasks[idx] = targetGroup.tasks[newIdx];
+  targetGroup.tasks[newIdx] = tmp;
+  saveState(); render();
 };
 
 window.deleteHierarchicalTask = function(groupId, taskId) {
@@ -683,25 +614,20 @@ window.deleteHierarchicalTask = function(groupId, taskId) {
   (state.majors || []).forEach(m => (m.groups || []).forEach(g => {
     if (g.id === groupId) {
       g.tasks = g.tasks.filter(t => t.id !== taskId);
-      delete state.todayLog[taskId];
+      if (state.todayLog) delete state.todayLog[taskId];
     }
   }));
-  saveState();
-  render();
+  saveState(); render();
 };
 
 window.addTaskToGroup = function(groupId) {
-  const title = prompt("新しいタスク名を入力:");
+  const title = prompt("新しいタスク名:");
   if (!title || !title.trim()) return;
   const memo = prompt("メモ（省略可）:") || "";
-
   (state.majors || []).forEach(m => (m.groups || []).forEach(g => {
-    if (g.id === groupId) {
-      g.tasks.push({ id: "t_" + Date.now(), title: title.trim(), memo: memo.trim() });
-    }
+    if (g.id === groupId) g.tasks.push({ id: "t_" + Date.now(), title: title.trim(), memo: memo.trim() });
   }));
-  saveState();
-  render();
+  saveState(); render();
 };
 
 window.renameGroup = function(groupId) {
@@ -711,23 +637,14 @@ window.renameGroup = function(groupId) {
     if (g) targetGroup = g;
   });
   if (!targetGroup) return;
-
   const val = prompt("カテゴリ名を変更:", targetGroup.name);
-  if (val !== null && val.trim()) {
-    targetGroup.name = val.trim();
-    saveState();
-    render();
-  }
+  if (val !== null && val.trim()) { targetGroup.name = val.trim(); saveState(); render(); }
 };
 
-let longPressTimer = null;
-let longPressFired = false;
+let longPressTimer = null, longPressFired = false;
 window.startOccasionalPress = function(id) {
   longPressFired = false;
-  longPressTimer = setTimeout(() => {
-    longPressFired = true;
-    executeToggleOccasional(id);
-  }, 600);
+  longPressTimer = setTimeout(() => { longPressFired = true; executeToggleOccasional(id); }, 600);
 };
 window.cancelOccasionalPress = function() {
   if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
@@ -736,10 +653,8 @@ window.cancelOccasionalPress = function() {
 function executeToggleOccasional(id) {
   const item = state.occasional.find(o => o.id === id);
   if (!item) return;
-
   if (item.completed) {
-    item.completed = false;
-    item.completedAt = null;
+    item.completed = false; item.completedAt = null;
     item.lastDoneDate = item.prevDoneDate !== undefined ? item.prevDoneDate : item.lastDoneDate;
     item.memo = item.prevMemo !== undefined ? item.prevMemo : item.memo;
     if (navigator.vibrate) navigator.vibrate(50);
@@ -750,15 +665,13 @@ function executeToggleOccasional(id) {
     const today = getTodayString();
     item.completedAt = `${today} ${getCurrentTimeStr()}`;
     item.lastDoneDate = today;
-
     if (item.allowMemo) {
-      const m = prompt(`「${item.title}」のメモ（空欄OK）:`, item.memo || "");
+      const m = prompt(`「${item.title}」のメモ:`, item.memo || "");
       if (m !== null) item.memo = m.trim();
     }
     window.triggerPraise(false);
   }
-  saveState(); 
-  render();
+  saveState(); render();
 }
 
 window.editOccasionalMemo = function(id) {
@@ -771,14 +684,11 @@ window.editOccasionalMemo = function(id) {
 window.doneRoutine = function(id) {
   const item = state.routines.find(r => r.id === id);
   if (!item) return;
-  const ok = confirm(`「${item.title}」を実施完了にしますか？`);
-  if (!ok) return;
-
-  item.prevDone = item.lastDone;
-  item.prevMemo = item.memo || "";
+  if (!confirm(`「${item.title}」を実施完了にしますか？`)) return;
+  item.prevDone = item.lastDone; item.prevMemo = item.memo || "";
   item.lastDone = getTodayString();
   if (item.allowMemo) {
-    const m = prompt(`「${item.title}」のメモ（例: デザイン、検査結果など）:`, item.memo || "");
+    const m = prompt(`「${item.title}」のメモ:`, item.memo || "");
     if (m !== null) item.memo = m.trim();
   }
   window.triggerPraise(false); saveState(); render();
@@ -795,14 +705,11 @@ window.addCleaningTask = function() {
   const input = document.getElementById("clean-add-input");
   const val = input ? input.value.trim() : "";
   if (!val) return alert("タスク名を入力してください");
-  
   (state.majors || []).forEach(m => {
     const cleanGroup = (m.groups || []).find(g => g.id === "cleaning");
     if (cleanGroup) {
       cleanGroup.tasks.push({ id: "t_clean_" + Date.now(), title: val, memo: "" });
-      saveState();
-      if (input) input.value = "";
-      render();
+      saveState(); if (input) input.value = ""; render();
     }
   });
 };
@@ -813,9 +720,8 @@ window.deleteCleaningTask = function(tId) {
     const cleanGroup = (m.groups || []).find(g => g.id === "cleaning");
     if (cleanGroup) {
       cleanGroup.tasks = cleanGroup.tasks.filter(t => t.id !== tId);
-      delete state.todayLog[tId];
-      saveState();
-      render();
+      if (state.todayLog) delete state.todayLog[tId];
+      saveState(); render();
     }
   });
 };
@@ -825,53 +731,40 @@ window.addNewDailyTask = function() {
   const memo = document.getElementById("add-memo")?.value.trim() || "";
   const groupId = document.getElementById("add-group")?.value;
   if (!t) return alert("タスク名を入力してください");
-
   (state.majors || []).forEach(m => (m.groups || []).forEach(g => {
-    if (g.id === groupId) {
-      g.tasks.push({ id: "t_" + Date.now(), title: t, memo: memo });
-    }
+    if (g.id === groupId) g.tasks.push({ id: "t_" + Date.now(), title: t, memo: memo });
   }));
-  saveState();
-  alert("追加しました！");
-  window.switchTab("today");
+  saveState(); alert("追加しました！"); window.switchTab("today");
 };
-
-// 埋め込みURLへの自動バックグラウンド同期
 window.silentSyncToSpreadsheet = async function() {
   const url = DEFAULT_GAS_URL;
   if (!url) return;
   const rows = [];
   const today = getTodayString();
-  
   getAllTasksFlat().forEach(t => {
-    if (state.todayLog[t.id]) {
+    if (state.todayLog && state.todayLog[t.id]) {
       rows.push({ date: today, type: "今日のタスク", title: `[${t.majorName} > ${t.groupName}] ${t.title}`, detail: state.todayLog[t.id] });
     }
   });
-  
   let done = 0;
-  getAllTasksFlat().forEach(t => { if (state.todayLog[t.id]) done++; });
+  getAllTasksFlat().forEach(t => { if (state.todayLog && state.todayLog[t.id]) done++; });
   rows.push({ date: today, type: "日次サマリー", title: "本日の達成状況", detail: `${done}個完了` });
   if (state.todayDiary?.trim()) {
     rows.push({ date: today, type: "今日の日記・メモ", title: "ひとこと記録", detail: state.todayDiary.trim() });
   }
-
   try {
     await fetch(url, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ rows }) });
   } catch(e) {}
 };
 
-// 埋め込みURLからのデータ復元
 window.loadFromSpreadsheet = async function() {
   const url = DEFAULT_GAS_URL;
-  if (!url) return alert("URLが正しく設定されていません。");
-  if (!confirm("スプレッドシートの記録を読み込んでアプリに反映しますか？")) return;
-
+  if (!url) return alert("URLが設定されていません。");
+  if (!confirm("スプレッドシートからデータを読み込みますか？")) return;
   try {
     const res = await fetch(url);
     const json = await res.json();
     if (json.status !== "success" || !json.rows) return alert("読み込みに失敗しました。");
-
     const todayStr = getTodayString();
     let loadedCount = 0;
     const taskMap = {};
@@ -879,15 +772,14 @@ window.loadFromSpreadsheet = async function() {
       taskMap[`[${t.majorName} > ${t.groupName}] ${t.title}`] = t.id;
       taskMap[t.title] = t.id;
     });
+    if (!state.todayLog) state.todayLog = {};
+    if (!state.history) state.history = {};
 
     json.rows.forEach(r => {
       const d = r.date;
       if (r.type === "今日のタスク") {
         const taskId = taskMap[r.title];
-        if (d === todayStr && taskId) {
-          state.todayLog[taskId] = r.detail;
-          loadedCount++;
-        }
+        if (d === todayStr && taskId) { state.todayLog[taskId] = r.detail; loadedCount++; }
         if (!state.history[d]) state.history[d] = { done: 0, diary: "", tasks: [] };
         if (!state.history[d].tasks.some(x => x.title === r.title)) {
           state.history[d].tasks.push({ cat: "", title: r.title, time: r.detail });
@@ -898,14 +790,8 @@ window.loadFromSpreadsheet = async function() {
         state.history[d].diary = r.detail;
       }
     });
-
-    Object.keys(state.history).forEach(dk => {
-      state.history[dk].done = state.history[dk].tasks.length;
-    });
-
-    saveState();
-    render();
-    alert(`スプレッドシートから読み込みました！（本日分: ${loadedCount}件復元）`);
+    Object.keys(state.history).forEach(dk => { state.history[dk].done = state.history[dk].tasks.length; });
+    saveState(); render(); alert(`スプレッドシートから読み込みました！（本日分: ${loadedCount}件復元）`);
   } catch(e) {
     alert("通信エラーが発生しました。");
   }
@@ -915,9 +801,8 @@ function getStatsSummary(days) {
   let done = 0;
   const now = new Date(getTodayString());
   let todayDone = 0;
-  getAllTasksFlat().forEach(t => { if (state.todayLog[t.id]) todayDone++; });
+  getAllTasksFlat().forEach(t => { if (state.todayLog && state.todayLog[t.id]) todayDone++; });
   const combinedHistory = { ...(state.history || {}), [getTodayString()]: { done: todayDone } };
-
   for (let i = 0; i < days; i++) {
     const d = new Date(now);
     d.setDate(now.getDate() - i);
@@ -937,7 +822,6 @@ function render() {
   if (tab === "today") {
     const targetDateStr = state.viewDateStr || getTodayString();
     const isToday = targetDateStr === getTodayString();
-    
     const histRecord = (!isToday && state.history) ? state.history[targetDateStr] : null;
     const pastTasksMap = {};
     if (histRecord && histRecord.tasks) {
@@ -945,11 +829,8 @@ function render() {
     }
 
     let done = 0;
-    if (isToday) {
-      getAllTasksFlat().forEach(t => { if (state.todayLog[t.id]) done++; });
-    } else {
-      done = histRecord ? (histRecord.done || 0) : 0;
-    }
+    if (isToday) getAllTasksFlat().forEach(t => { if (state.todayLog && state.todayLog[t.id]) done++; });
+    else done = histRecord ? (histRecord.done || 0) : 0;
 
     let h = `
       <div class="status-card">
@@ -966,7 +847,6 @@ function render() {
     (state.majors || []).forEach(major => {
       const groups = (major.groups || []).filter(g => g.id !== "cleaning");
       if (!groups.length) return;
-
       groups.forEach(group => {
         const isSingle = group.single || group.tasks.length <= 1;
         h += `
@@ -978,8 +858,8 @@ function render() {
             <div class="task-grid-container">
         `;
         group.tasks.forEach(t => {
-          const isDone = isToday ? !!state.todayLog[t.id] : !!pastTasksMap[t.title];
-          const doneTime = isToday ? (state.todayLog[t.id] || '') : (pastTasksMap[t.title] || '');
+          const isDone = isToday ? !!(state.todayLog && state.todayLog[t.id]) : !!pastTasksMap[t.title];
+          const doneTime = isToday ? ((state.todayLog && state.todayLog[t.id]) || '') : (pastTasksMap[t.title] || '');
           h += `
             <div class="task-item ${isDone ? 'checked' : ''}" onclick="toggleTask('${t.id}')">
               <div class="task-checkbox">${isDone ? '✔' : ''}</div>
@@ -1030,7 +910,7 @@ function render() {
           <div class="task-grid-container">
       `;
       cleanGroup.tasks.forEach(t => {
-        const isDone = !!state.todayLog[t.id];
+        const isDone = !!(state.todayLog && state.todayLog[t.id]);
         h += `
           <div class="task-item ${isDone ? 'checked' : ''}" onclick="toggleTask('${t.id}')">
             <div class="task-checkbox">${isDone ? '✔' : ''}</div>
@@ -1040,7 +920,7 @@ function render() {
                 <button class="action-btn undo" style="padding:2px 8px; font-size:0.75rem; color:#ff4757;" onclick="event.stopPropagation(); deleteCleaningTask('${t.id}')">削除</button>
               </div>
             </div>
-            <div class="task-time">${state.todayLog[t.id] || ''}</div>
+            <div class="task-time">${(state.todayLog && state.todayLog[t.id]) || ''}</div>
           </div>
         `;
       });
@@ -1051,7 +931,7 @@ function render() {
   } else if (tab === "occasional") {
     let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">💡 たまにやるタスク</h2>';
     const now = new Date(getTodayString());
-    state.occasional.forEach(item => {
+    (state.occasional || []).forEach(item => {
       let info = "未実施";
       if (item.lastDoneDate) {
         const diff = Math.floor((now - new Date(item.lastDoneDate)) / 86400000);
@@ -1091,7 +971,7 @@ function render() {
   } else if (tab === "routine") {
     let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">🔄 定期メンテナンス</h2>';
     const now = new Date(getTodayString());
-    state.routines.forEach(item => {
+    (state.routines || []).forEach(item => {
       let daysAgoText = "未実施";
       let intervalBadge = "";
 
@@ -1100,12 +980,9 @@ function render() {
         const diff = Math.floor((now - lastDoneDate) / 86400000);
         daysAgoText = `${item.lastDone} (${diff}日前)`;
         const left = item.intervalDays - diff;
-
         const nextDateObj = new Date(lastDoneDate);
         nextDateObj.setDate(nextDateObj.getDate() + item.intervalDays);
-        const nextM = nextDateObj.getMonth() + 1;
-        const nextD = nextDateObj.getDate();
-        const nextDateDisplay = `${nextM}月${nextD}日`;
+        const nextDateDisplay = `${nextDateObj.getMonth() + 1}月${nextDateObj.getDate()}日`;
 
         if (left > 0) {
           intervalBadge = `<span style="color:#0984e3; font-weight:800; background:#e8f4fd; padding:4px 9px; border-radius:8px; display:inline-block; line-height:1.4;">🟢 次回予定: ${nextDateDisplay} (あと${left}日 / ${item.intervalDays}日ごと)</span>`;
@@ -1231,12 +1108,10 @@ function render() {
       <h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">📊 達成サマリー & 履歴</h2>
       <div class="status-card" style="margin-bottom:16px; border-left: 5px solid var(--primary);">
         <div style="font-size:1.15rem; font-weight:900; margin-bottom:12px;">📈 達成合計</div>
-        
         <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed #eee;">
           <span style="font-size:1.05rem; font-weight:800;">🗓 直近1週間（7日間）</span>
           <span style="font-size:1.35rem; font-weight:900; color:var(--primary);">${wStats.done} <span style="font-size:0.92rem; color:var(--text-sub); font-weight:700;">個達成</span></span>
         </div>
-
         <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;">
           <span style="font-size:1.05rem; font-weight:800;">📅 直近1ヶ月（30日間）</span>
           <span style="font-size:1.35rem; font-weight:900; color:var(--primary);">${mStats.done} <span style="font-size:0.92rem; color:var(--text-sub); font-weight:700;">個達成</span></span>
@@ -1279,7 +1154,6 @@ function render() {
               </div>
             </div>
             ${rec.diary ? `<div style="font-size:0.95rem; color:var(--text-sub); background:#f8f9fa; padding:8px 10px; border-radius:8px; width:100%;">📝 ${rec.diary}</div>` : ''}
-            
             <div class="history-detail-box ${isOpen ? 'open' : ''}" onclick="event.stopPropagation()">
               <div style="font-size:0.95rem; font-weight:800; color:var(--text-sub); margin-bottom:8px;">📋 できたこと (${taskList.length}件)</div>
         `;
@@ -1299,7 +1173,6 @@ function render() {
             `;
           });
         }
-
         h += `</div></div>`;
       });
     }
@@ -1308,7 +1181,6 @@ function render() {
   } else if (tab === "settings") {
     c.innerHTML = `
       <h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">⚙️ 設定</h2>
-      
       <div class="status-card">
         <h3 style="font-size:1.15rem; margin-bottom:10px;">📊 Googleスプレッドシート連携</h3>
         <p style="font-size:0.95rem; color:var(--text-sub); margin-bottom:16px; line-height:1.5;">
@@ -1336,9 +1208,7 @@ document.addEventListener("gestureend", e => e.preventDefault(), { passive: fals
 let lastTouchEnd = 0;
 document.addEventListener("touchend", e => {
   const now = Date.now();
-  if (now - lastTouchEnd <= 300) {
-    e.preventDefault();
-  }
+  if (now - lastTouchEnd <= 300) e.preventDefault();
   lastTouchEnd = now;
 }, { passive: false });
 
