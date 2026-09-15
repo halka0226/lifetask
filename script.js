@@ -1,66 +1,132 @@
-const DEFAULT_DAILY = [
-  { id: "target", name: "🎯 今日の目標", single: true, tasks: ["8,000歩達成"] },
-  { id: "morning", name: "🌅 朝", tasks: ["起きる", "薬を飲む", "朝のサプリ", "顔を洗う", "保湿", "髪を乾かす"] },
-  { 
-    id: "gym", 
-    name: "🏋️ ジム", 
-    tasks: [
-      "ジムへ行く準備（タオル・イヤホン・パワーグリップ）", 
-      "ジムへ行って運動する", 
-      "体組成計で計測・写真を撮る", 
-      "結果をスプレッドシートに入れる"
-    ] 
-  },
-  { 
-    id: "after_gym", 
-    name: "🏠 ジム後", 
-    tasks: ["BCAA", "お風呂", "プロテイン", "カレンダーにシールはる"] 
-  },
-  { 
-    id: "lunch", 
-    name: "🍚 昼", 
-    tasks: ["デトックススープ", "納豆＋卵入り沼", "昼のサプリ"] 
-  },
-  { 
-    id: "cleaning", 
-    name: "🧹 掃除・空き時間", 
-    tasks: [
-      "掃除", 
-      "捨て活・不用品整理", 
-      "あたらしい音楽を聞いた", 
-      "映像をみた", 
-      "しらべものをした"
-    ] 
-  },
-  { id: "night", name: "🌙 夜", tasks: ["夜ご飯", "サプリ", "洗濯〜乾燥を回す"] },
-  { 
-    id: "bath", 
-    name: "🛁 夜のお風呂", 
-    tasks: [
-      "湯船をためる", "歯間フロス・ソニッケアー準備", "ホワイトニング準備", "鼻うがい準備", 
-      "クレンジングシャンプー", "普通のシャンプーで二度洗い", "ケラチンスプレーとトリートメント", 
-      "鼻うがい", "歯間フロス", "湯船につかる", "歯磨き", "ホームホワイトニング", 
-      "ストレッチ", "体を洗う", "顔を洗う", "ブテナロックで足・脇・耳裏を洗う"
-    ] 
-  },
-  { 
-    id: "after_bath", 
-    name: "✨ お風呂上がり", 
-    tasks: [
-      "お風呂掃除",
-      "体に化粧水スプレーとクリーム保湿", "顔を保湿", "まつげ美容液", "ワキにリフレア", 
-      "顔パック", "ビオチンケラチンスプレー", "髪を乾かす", "ヘアオイル", "美顔器"
-    ] 
-  },
-  { 
-    id: "laundry", 
-    name: "🧺 洗濯終了後", 
-    tasks: ["洗濯物を取り出す", "畳む", "フィルターのホコリを取る"] 
-  },
-  { 
-    id: "before_sleep", 
-    name: "🛌 寝る前", 
-    tasks: ["薬をのむ", "爪にオイル塗る"] 
+// 大カテゴリ・中カテゴリ・小タスク・メモの階層データ
+const DEFAULT_HIERARCHY = [
+  {
+    id: "major_daily",
+    name: "毎日の習慣",
+    groups: [
+      {
+        id: "target",
+        name: "🎯 今日の目標",
+        single: true,
+        tasks: [{ id: "t_target_1", title: "8,000歩達成", memo: "" }]
+      },
+      {
+        id: "morning",
+        name: "🌅 朝",
+        tasks: [
+          { id: "t_m_1", title: "起きる", memo: "" },
+          { id: "t_m_2", title: "薬を飲む", memo: "" },
+          { id: "t_m_3", title: "朝のサプリ", memo: "" },
+          { id: "t_m_4", title: "顔を洗う", memo: "" },
+          { id: "t_m_5", title: "保湿", memo: "" },
+          { id: "t_m_6", title: "髪を乾かす", memo: "" }
+        ]
+      },
+      {
+        id: "gym",
+        name: "🏋️ ジム",
+        tasks: [
+          { id: "t_g_1", title: "ジムへ行く準備", memo: "タオル・イヤホン・パワーグリップ" },
+          { id: "t_g_2", title: "ジムへ行って運動する", memo: "" },
+          { id: "t_g_3", title: "体組成計で計測・写真を撮る", memo: "" },
+          { id: "t_g_4", title: "結果をスプレッドシートに入れる", memo: "" }
+        ]
+      },
+      {
+        id: "after_gym",
+        name: "🏠 ジム後",
+        tasks: [
+          { id: "t_ag_1", title: "BCAA", memo: "" },
+          { id: "t_ag_2", title: "お風呂", memo: "" },
+          { id: "t_ag_3", title: "プロテイン", memo: "" },
+          { id: "t_ag_4", title: "カレンダーにシールはる", memo: "" }
+        ]
+      },
+      {
+        id: "lunch",
+        name: "🍚 昼",
+        tasks: [
+          { id: "t_l_1", title: "デトックススープ", memo: "" },
+          { id: "t_l_2", title: "納豆＋卵入り沼", memo: "" },
+          { id: "t_l_3", title: "昼のサプリ", memo: "" }
+        ]
+      },
+      {
+        id: "cleaning",
+        name: "🧹 掃除・空き時間",
+        tasks: [
+          { id: "t_c_1", title: "掃除", memo: "" },
+          { id: "t_c_2", title: "捨て活・不用品整理", memo: "" },
+          { id: "t_c_3", title: "あたらしい音楽を聞いた", memo: "" },
+          { id: "t_c_4", title: "映像をみた", memo: "" },
+          { id: "t_c_5", title: "しらべものをした", memo: "" }
+        ]
+      },
+      {
+        id: "night",
+        name: "🌙 夜",
+        tasks: [
+          { id: "t_n_1", title: "夜ご飯", memo: "" },
+          { id: "t_n_2", title: "サプリ", memo: "" },
+          { id: "t_n_3", title: "洗濯〜乾燥を回す", memo: "" }
+        ]
+      },
+      {
+        id: "bath",
+        name: "🛁 夜のお風呂",
+        tasks: [
+          { id: "t_b_1", title: "湯船をためる", memo: "" },
+          { id: "t_b_2", title: "歯間フロス・ソニッケアー準備", memo: "" },
+          { id: "t_b_3", title: "ホワイトニング準備", memo: "" },
+          { id: "t_b_4", title: "鼻うがい準備", memo: "" },
+          { id: "t_b_5", title: "クレンジングシャンプー", memo: "" },
+          { id: "t_b_6", title: "普通のシャンプーで二度洗い", memo: "" },
+          { id: "t_b_7", title: "ケラチンスプレーとトリートメント", memo: "" },
+          { id: "t_b_8", title: "鼻うがい", memo: "" },
+          { id: "t_b_9", title: "歯間フロス", memo: "" },
+          { id: "t_b_10", title: "湯船につかる", memo: "" },
+          { id: "t_b_11", title: "歯磨き", memo: "" },
+          { id: "t_b_12", title: "ホームホワイトニング", memo: "" },
+          { id: "t_b_13", title: "ストレッチ", memo: "" },
+          { id: "t_b_14", title: "体を洗う", memo: "" },
+          { id: "t_b_15", title: "顔を洗う", memo: "" },
+          { id: "t_b_16", title: "ブテナロックで足・脇・耳裏を洗う", memo: "" }
+        ]
+      },
+      {
+        id: "after_bath",
+        name: "✨ お風呂上がり",
+        tasks: [
+          { id: "t_ab_1", title: "お風呂掃除", memo: "" },
+          { id: "t_ab_2", title: "体に化粧水スプレーとクリーム保湿", memo: "" },
+          { id: "t_ab_3", title: "顔を保湿", memo: "" },
+          { id: "t_ab_4", title: "まつげ美容液", memo: "" },
+          { id: "t_ab_5", title: "ワキにリフレア", memo: "" },
+          { id: "t_ab_6", title: "顔パック", memo: "" },
+          { id: "t_ab_7", title: "ビオチンケラチンスプレー", memo: "" },
+          { id: "t_ab_8", title: "髪を乾かす", memo: "" },
+          { id: "t_ab_9", title: "ヘアオイル", memo: "" },
+          { id: "t_ab_10", title: "美顔器", memo: "" }
+        ]
+      },
+      {
+        id: "laundry",
+        name: "🧺 洗濯終了後",
+        tasks: [
+          { id: "t_ld_1", title: "洗濯物を取り出す", memo: "" },
+          { id: "t_ld_2", title: "畳む", memo: "" },
+          { id: "t_ld_3", title: "フィルターのホコリを取る", memo: "" }
+        ]
+      },
+      {
+        id: "before_sleep",
+        name: "🛌 寝る前",
+        tasks: [
+          { id: "t_bs_1", title: "薬をのむ", memo: "" },
+          { id: "t_bs_2", title: "爪にオイル塗る", memo: "" }
+        ]
+      }
+    ]
   }
 ];
 
@@ -89,12 +155,14 @@ const DEFAULT_ROUTINES = [
   { id: "rt_thyroid", title: "伊東病院で甲状腺検査", intervalDays: 180, lastDone: null, memo: "", allowMemo: true, deadline: null, prevDone: null, prevMemo: "" },
   { id: "rt_checkup", title: "港区健康診断", intervalDays: 365, lastDone: null, memo: "", allowMemo: true, deadline: null, prevDone: null, prevMemo: "" }
 ];
+// 🌟 デプロイURLを直接埋め込み
+const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbzZjKeZLlq6VBQpUiFLAcHf_92mU2e5OkqSRtYk26uvKLVZmagRKYggdJa5DTBrr8iZ/exec";
 
-const STORAGE_KEY = "LIFE_OS_DATA_V41_CUSTOM_CLEAN";
+const STORAGE_KEY = "LIFE_OS_DATA_V48_DEPLOYED";
 let state = {
   currentTab: "today",
   viewDateStr: "",
-  categories: [],
+  majors: [],
   todayLog: {},
   todayDateStr: "",
   todayDiary: "",
@@ -189,15 +257,25 @@ window.jumpToTodayDate = function() {
   render();
 };
 
+function getAllTasksFlat() {
+  const list = [];
+  (state.majors || []).forEach(major => {
+    (major.groups || []).forEach(group => {
+      (group.tasks || []).forEach(task => {
+        list.push({ majorName: major.name, groupName: group.name, ...task });
+      });
+    });
+  });
+  return list;
+}
+
 function recordDayHistory(dateStr) {
   if (!dateStr) return;
   const completedTasks = [];
-  state.categories.forEach(c => {
-    c.tasks.forEach(t => {
-      if (state.todayLog[t.id]) {
-        completedTasks.push({ cat: c.name, title: t.title, time: state.todayLog[t.id] });
-      }
-    });
+  getAllTasksFlat().forEach(t => {
+    if (state.todayLog[t.id]) {
+      completedTasks.push({ cat: `${t.majorName} > ${t.groupName}`, title: t.title, time: state.todayLog[t.id] });
+    }
   });
   completedTasks.sort((a, b) => a.time.localeCompare(b.time));
 
@@ -212,9 +290,7 @@ function recordDayHistory(dateStr) {
 function saveState() {
   recordDayHistory(state.todayDateStr);
   try {
-    const gas = localStorage.getItem("GAS_WEBAPP_URL");
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    if (gas) localStorage.setItem("GAS_WEBAPP_URL", gas);
   } catch(e) {}
 }
 
@@ -226,14 +302,8 @@ function loadState() {
   const today = getTodayString();
   if (!state.viewDateStr) state.viewDateStr = today;
 
-  if (!state.categories || !state.categories.length) {
-    let count = 1;
-    state.categories = DEFAULT_DAILY.map(c => ({
-      id: c.id,
-      name: c.name,
-      single: !!c.single,
-      tasks: c.tasks.map(t => ({ id: "t_" + (count++), title: t }))
-    }));
+  if (!state.majors || !state.majors.length) {
+    state.majors = DEFAULT_HIERARCHY;
     state.occasional = DEFAULT_OCCASIONAL;
     state.routines = DEFAULT_ROUTINES;
     state.todayLog = {};
@@ -269,7 +339,15 @@ function loadState() {
 }
 
 let praiseTimer = null;
-window.triggerPraise = function() {
+window.triggerPraise = function(isMultiple = false) {
+  if (navigator.vibrate) {
+    if (isMultiple) {
+      navigator.vibrate([40, 50, 40]);
+    } else {
+      navigator.vibrate(40);
+    }
+  }
+
   const el = document.getElementById("celebration-overlay");
   if (el) el.classList.add("active");
   const colors = ['#ff758c', '#ffd166', '#48dbfb', '#1dd1a1', '#ff9ff3'];
@@ -299,12 +377,10 @@ function getCompletedTaskList(targetDateStr) {
   const isToday = !targetDateStr || targetDateStr === getTodayString();
   
   if (isToday) {
-    state.categories.forEach(cat => {
-      cat.tasks.forEach(t => {
-        if (state.todayLog[t.id]) {
-          list.push({ cat: cat.name, title: t.title, time: state.todayLog[t.id] });
-        }
-      });
+    getAllTasksFlat().forEach(t => {
+      if (state.todayLog[t.id]) {
+        list.push({ cat: `${t.groupName}`, title: t.title, time: state.todayLog[t.id] });
+      }
     });
   } else {
     const hist = state.history && state.history[targetDateStr];
@@ -358,7 +434,6 @@ window.closeDoneModal = function(e) {
   if (overlay) overlay.classList.remove("active");
 };
 
-// --- カレンダーピッカー制御（日付クリア対応） ---
 let datePickerTarget = null;
 window.openDatePickerModal = function(type, id, currentVal) {
   datePickerTarget = { type, id };
@@ -439,7 +514,6 @@ window.clearDatePickerSelection = function() {
   closeDatePickerModal();
 };
 
-// --- 周期スロット＋直入力モーダル制御 ---
 let intervalEditTargetId = null;
 window.openIntervalModal = function(id) {
   intervalEditTargetId = id;
@@ -508,25 +582,33 @@ window.toggleTask = function(id) {
     delete state.todayLog[id];
   } else {
     state.todayLog[id] = getCurrentTimeStr();
-    window.triggerPraise();
+    window.triggerPraise(false);
   }
   saveState(); 
   render();
   window.silentSyncToSpreadsheet();
 };
 
-window.batchComplete = function(catId) {
+window.batchComplete = function(groupId) {
   const isToday = state.viewDateStr === getTodayString();
-  if (!isToday) {
-    alert("過去（未来）の日付のタスクは閲覧専用です。");
-    return;
-  }
-  const cat = state.categories.find(c => c.id === catId);
-  if (!cat) return;
+  if (!isToday) return alert("過去（未来）の日付のタスクは閲覧専用です。");
+
+  let foundGroup = null;
+  (state.majors || []).forEach(m => {
+    const g = (m.groups || []).find(x => x.id === groupId);
+    if (g) foundGroup = g;
+  });
+  if (!foundGroup) return;
+
   const now = getCurrentTimeStr();
   let added = false;
-  cat.tasks.forEach(t => { if (!state.todayLog[t.id]) { state.todayLog[t.id] = now; added = true; } });
-  if (added) window.triggerPraise();
+  foundGroup.tasks.forEach(t => {
+    if (!state.todayLog[t.id]) {
+      state.todayLog[t.id] = now;
+      added = true;
+    }
+  });
+  if (added) window.triggerPraise(true);
   saveState(); 
   render();
   window.silentSyncToSpreadsheet();
@@ -542,11 +624,104 @@ window.onDiaryInput = val => {
   }
   saveState();
 };
+window.renameTask = function(taskId) {
+  let targetTask = null;
+  (state.majors || []).forEach(m => (m.groups || []).forEach(g => {
+    const t = (g.tasks || []).find(x => x.id === taskId);
+    if (t) targetTask = t;
+  }));
+  if (!targetTask) return;
 
-// --- 長押しタイマー制御 & 解除時に元データ復元 ---
+  const val = prompt("タスク名を変更:", targetTask.title);
+  if (val !== null && val.trim()) {
+    targetTask.title = val.trim();
+    saveState();
+    render();
+  }
+};
+
+window.editTaskMemo = function(taskId) {
+  let targetTask = null;
+  (state.majors || []).forEach(m => (m.groups || []).forEach(g => {
+    const t = (g.tasks || []).find(x => x.id === taskId);
+    if (t) targetTask = t;
+  }));
+  if (!targetTask) return;
+
+  const val = prompt(`「${targetTask.title}」のメモ（空欄OK）:`, targetTask.memo || "");
+  if (val !== null) {
+    targetTask.memo = val.trim();
+    saveState();
+    render();
+  }
+};
+
+window.moveTaskOrder = function(groupId, taskId, direction) {
+  let targetGroup = null;
+  (state.majors || []).forEach(m => {
+    const g = (m.groups || []).find(x => x.id === groupId);
+    if (g) targetGroup = g;
+  });
+  if (!targetGroup) return;
+
+  const index = targetGroup.tasks.findIndex(t => t.id === taskId);
+  if (index === -1) return;
+
+  const newIndex = index + direction;
+  if (newIndex < 0 || newIndex >= targetGroup.tasks.length) return;
+
+  const temp = targetGroup.tasks[index];
+  targetGroup.tasks[index] = targetGroup.tasks[newIndex];
+  targetGroup.tasks[newIndex] = temp;
+
+  saveState();
+  render();
+};
+
+window.deleteHierarchicalTask = function(groupId, taskId) {
+  if (!confirm("このタスクを削除しますか？")) return;
+  (state.majors || []).forEach(m => (m.groups || []).forEach(g => {
+    if (g.id === groupId) {
+      g.tasks = g.tasks.filter(t => t.id !== taskId);
+      delete state.todayLog[taskId];
+    }
+  }));
+  saveState();
+  render();
+};
+
+window.addTaskToGroup = function(groupId) {
+  const title = prompt("新しいタスク名を入力:");
+  if (!title || !title.trim()) return;
+  const memo = prompt("メモ（省略可）:") || "";
+
+  (state.majors || []).forEach(m => (m.groups || []).forEach(g => {
+    if (g.id === groupId) {
+      g.tasks.push({ id: "t_" + Date.now(), title: title.trim(), memo: memo.trim() });
+    }
+  }));
+  saveState();
+  render();
+};
+
+window.renameGroup = function(groupId) {
+  let targetGroup = null;
+  (state.majors || []).forEach(m => {
+    const g = (m.groups || []).find(x => x.id === groupId);
+    if (g) targetGroup = g;
+  });
+  if (!targetGroup) return;
+
+  const val = prompt("カテゴリ名を変更:", targetGroup.name);
+  if (val !== null && val.trim()) {
+    targetGroup.name = val.trim();
+    saveState();
+    render();
+  }
+};
+
 let longPressTimer = null;
 let longPressFired = false;
-
 window.startOccasionalPress = function(id) {
   longPressFired = false;
   longPressTimer = setTimeout(() => {
@@ -554,12 +729,8 @@ window.startOccasionalPress = function(id) {
     executeToggleOccasional(id);
   }, 600);
 };
-
 window.cancelOccasionalPress = function() {
-  if (longPressTimer) {
-    clearTimeout(longPressTimer);
-    longPressTimer = null;
-  }
+  if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
 };
 
 function executeToggleOccasional(id) {
@@ -575,7 +746,6 @@ function executeToggleOccasional(id) {
   } else {
     item.prevDoneDate = item.lastDoneDate;
     item.prevMemo = item.memo || "";
-
     item.completed = true;
     const today = getTodayString();
     item.completedAt = `${today} ${getCurrentTimeStr()}`;
@@ -585,7 +755,7 @@ function executeToggleOccasional(id) {
       const m = prompt(`「${item.title}」のメモ（空欄OK）:`, item.memo || "");
       if (m !== null) item.memo = m.trim();
     }
-    window.triggerPraise();
+    window.triggerPraise(false);
   }
   saveState(); 
   render();
@@ -606,13 +776,12 @@ window.doneRoutine = function(id) {
 
   item.prevDone = item.lastDone;
   item.prevMemo = item.memo || "";
-
   item.lastDone = getTodayString();
   if (item.allowMemo) {
     const m = prompt(`「${item.title}」のメモ（例: デザイン、検査結果など）:`, item.memo || "");
     if (m !== null) item.memo = m.trim();
   }
-  window.triggerPraise(); saveState(); render();
+  window.triggerPraise(false); saveState(); render();
 };
 
 window.editRoutineMemo = function(id) {
@@ -627,91 +796,61 @@ window.addCleaningTask = function() {
   const val = input ? input.value.trim() : "";
   if (!val) return alert("タスク名を入力してください");
   
-  const cleanCat = state.categories.find(c => c.id === "cleaning");
-  if (cleanCat) {
-    cleanCat.tasks.push({ id: "t_clean_" + Date.now(), title: val });
-    saveState();
-    if (input) input.value = "";
-    render();
-  }
+  (state.majors || []).forEach(m => {
+    const cleanGroup = (m.groups || []).find(g => g.id === "cleaning");
+    if (cleanGroup) {
+      cleanGroup.tasks.push({ id: "t_clean_" + Date.now(), title: val, memo: "" });
+      saveState();
+      if (input) input.value = "";
+      render();
+    }
+  });
 };
 
 window.deleteCleaningTask = function(tId) {
   if (!confirm("この項目を削除しますか？")) return;
-  const cleanCat = state.categories.find(c => c.id === "cleaning");
-  if (cleanCat) {
-    cleanCat.tasks = cleanCat.tasks.filter(t => t.id !== tId);
-    delete state.todayLog[tId];
-    saveState();
-    render();
-  }
+  (state.majors || []).forEach(m => {
+    const cleanGroup = (m.groups || []).find(g => g.id === "cleaning");
+    if (cleanGroup) {
+      cleanGroup.tasks = cleanGroup.tasks.filter(t => t.id !== tId);
+      delete state.todayLog[tId];
+      saveState();
+      render();
+    }
+  });
 };
 
 window.addNewDailyTask = function() {
   const t = document.getElementById("add-title")?.value.trim();
-  const c = document.getElementById("add-cat")?.value;
-  if (!t) return alert("入力してください");
-  const cat = state.categories.find(x => x.id === c);
-  if (cat) { cat.tasks.push({ id: "t_" + Date.now(), title: t }); saveState(); alert("追加しました！"); window.switchTab("today"); }
-};
+  const memo = document.getElementById("add-memo")?.value.trim() || "";
+  const groupId = document.getElementById("add-group")?.value;
+  if (!t) return alert("タスク名を入力してください");
 
-window.deleteDailyTask = function(cId, tId) {
-  if (!confirm("削除しますか？")) return;
-  const cat = state.categories.find(c => c.id === cId);
-  if (cat) { cat.tasks = cat.tasks.filter(t => t.id !== tId); delete state.todayLog[tId]; saveState(); render(); }
-};
-
-window.exportData = function() {
-  const dataStr = JSON.stringify(state, null, 2);
-  const blob = new Blob([dataStr], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `life_os_backup_${getTodayString()}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-};
-
-window.importData = function() {
-  const inputVal = document.getElementById("import-text-area")?.value.trim();
-  if (!inputVal) return alert("インポートするJSONテキストを貼り付けてください。");
-  try {
-    const parsed = JSON.parse(inputVal);
-    if (!parsed.categories || !parsed.todayDateStr) {
-      return alert("データ形式が正しくありません。");
+  (state.majors || []).forEach(m => (m.groups || []).forEach(g => {
+    if (g.id === groupId) {
+      g.tasks.push({ id: "t_" + Date.now(), title: t, memo: memo });
     }
-    if (confirm("現在のデータを上書きして復元しますか？")) {
-      state = parsed;
-      saveState();
-      render();
-      alert("データを正常に復元しました！🎉");
-    }
-  } catch (e) {
-    alert("JSONの読み込みに失敗しました。正しいデータを貼り付けてください。");
-  }
+  }));
+  saveState();
+  alert("追加しました！");
+  window.switchTab("today");
 };
 
-window.saveGasUrl = function() {
-  const val = document.getElementById("gas-url-input")?.value.trim();
-  localStorage.setItem("GAS_WEBAPP_URL", val || "");
-  alert("URLを保存しました！");
-  window.silentSyncToSpreadsheet();
-};
-
+// 埋め込みURLへの自動バックグラウンド同期
 window.silentSyncToSpreadsheet = async function() {
-  const url = localStorage.getItem("GAS_WEBAPP_URL");
+  const url = DEFAULT_GAS_URL;
   if (!url) return;
   const rows = [];
   const today = getTodayString();
   
-  state.categories.forEach(cat => cat.tasks.forEach(t => {
+  getAllTasksFlat().forEach(t => {
     if (state.todayLog[t.id]) {
-      rows.push({ date: today, type: "今日のタスク", title: `[${cat.name}] ${t.title}`, detail: state.todayLog[t.id] });
+      rows.push({ date: today, type: "今日のタスク", title: `[${t.majorName} > ${t.groupName}] ${t.title}`, detail: state.todayLog[t.id] });
     }
-  }));
+  });
   
   let done = 0;
-  state.categories.forEach(c => c.tasks.forEach(t => { if (state.todayLog[t.id]) done++; }));
+  getAllTasksFlat().forEach(t => { if (state.todayLog[t.id]) done++; });
   rows.push({ date: today, type: "日次サマリー", title: "本日の達成状況", detail: `${done}個完了` });
   if (state.todayDiary?.trim()) {
     rows.push({ date: today, type: "今日の日記・メモ", title: "ひとこと記録", detail: state.todayDiary.trim() });
@@ -722,16 +861,61 @@ window.silentSyncToSpreadsheet = async function() {
   } catch(e) {}
 };
 
-window.syncToSpreadsheet = async function() {
-  await window.silentSyncToSpreadsheet();
-  alert("スプレッドシートに送信しました！🎉");
+// 埋め込みURLからのデータ復元
+window.loadFromSpreadsheet = async function() {
+  const url = DEFAULT_GAS_URL;
+  if (!url) return alert("URLが正しく設定されていません。");
+  if (!confirm("スプレッドシートの記録を読み込んでアプリに反映しますか？")) return;
+
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
+    if (json.status !== "success" || !json.rows) return alert("読み込みに失敗しました。");
+
+    const todayStr = getTodayString();
+    let loadedCount = 0;
+    const taskMap = {};
+    getAllTasksFlat().forEach(t => {
+      taskMap[`[${t.majorName} > ${t.groupName}] ${t.title}`] = t.id;
+      taskMap[t.title] = t.id;
+    });
+
+    json.rows.forEach(r => {
+      const d = r.date;
+      if (r.type === "今日のタスク") {
+        const taskId = taskMap[r.title];
+        if (d === todayStr && taskId) {
+          state.todayLog[taskId] = r.detail;
+          loadedCount++;
+        }
+        if (!state.history[d]) state.history[d] = { done: 0, diary: "", tasks: [] };
+        if (!state.history[d].tasks.some(x => x.title === r.title)) {
+          state.history[d].tasks.push({ cat: "", title: r.title, time: r.detail });
+        }
+      } else if (r.type === "今日の日記・メモ") {
+        if (d === todayStr) state.todayDiary = r.detail;
+        if (!state.history[d]) state.history[d] = { done: 0, diary: "", tasks: [] };
+        state.history[d].diary = r.detail;
+      }
+    });
+
+    Object.keys(state.history).forEach(dk => {
+      state.history[dk].done = state.history[dk].tasks.length;
+    });
+
+    saveState();
+    render();
+    alert(`スプレッドシートから読み込みました！（本日分: ${loadedCount}件復元）`);
+  } catch(e) {
+    alert("通信エラーが発生しました。");
+  }
 };
 
 function getStatsSummary(days) {
   let done = 0;
   const now = new Date(getTodayString());
   let todayDone = 0;
-  state.categories.forEach(c => c.tasks.forEach(t => { if (state.todayLog[t.id]) todayDone++; }));
+  getAllTasksFlat().forEach(t => { if (state.todayLog[t.id]) todayDone++; });
   const combinedHistory = { ...(state.history || {}), [getTodayString()]: { done: todayDone } };
 
   for (let i = 0; i < days; i++) {
@@ -762,7 +946,7 @@ function render() {
 
     let done = 0;
     if (isToday) {
-      state.categories.forEach(cat => cat.tasks.forEach(t => { if (state.todayLog[t.id]) done++; }));
+      getAllTasksFlat().forEach(t => { if (state.todayLog[t.id]) done++; });
     } else {
       done = histRecord ? (histRecord.done || 0) : 0;
     }
@@ -779,28 +963,36 @@ function render() {
       </div>
     `;
 
-    state.categories.filter(cat => cat.id !== "cleaning").forEach(cat => {
-      const isSingle = cat.single || cat.tasks.length <= 1;
-      h += `
-        <div class="category-group">
-          <div class="category-header">
-            <span>${cat.name}</span>
-            ${(isToday && !isSingle) ? `<button class="batch-btn" onclick="batchComplete('${cat.id}')">まとめて完了</button>` : ''}
-          </div>
-          <div class="task-grid-container">
-      `;
-      cat.tasks.forEach(t => {
-        const isDone = isToday ? !!state.todayLog[t.id] : !!pastTasksMap[t.title];
-        const doneTime = isToday ? (state.todayLog[t.id] || '') : (pastTasksMap[t.title] || '');
+    (state.majors || []).forEach(major => {
+      const groups = (major.groups || []).filter(g => g.id !== "cleaning");
+      if (!groups.length) return;
+
+      groups.forEach(group => {
+        const isSingle = group.single || group.tasks.length <= 1;
         h += `
-          <div class="task-item ${isDone ? 'checked' : ''}" onclick="toggleTask('${t.id}')">
-            <div class="task-checkbox">${isDone ? '✔' : ''}</div>
-            <div class="task-title">${t.title}</div>
-            <div class="task-time">${doneTime}</div>
-          </div>
+          <div class="category-group">
+            <div class="category-header">
+              <span>${group.name}</span>
+              ${(isToday && !isSingle) ? `<button class="batch-btn" onclick="batchComplete('${group.id}')">まとめて完了</button>` : ''}
+            </div>
+            <div class="task-grid-container">
         `;
+        group.tasks.forEach(t => {
+          const isDone = isToday ? !!state.todayLog[t.id] : !!pastTasksMap[t.title];
+          const doneTime = isToday ? (state.todayLog[t.id] || '') : (pastTasksMap[t.title] || '');
+          h += `
+            <div class="task-item ${isDone ? 'checked' : ''}" onclick="toggleTask('${t.id}')">
+              <div class="task-checkbox">${isDone ? '✔' : ''}</div>
+              <div class="task-title">
+                ${t.title}
+                ${t.memo ? `<div class="task-memo-badge">💬 ${t.memo}</div>` : ''}
+              </div>
+              <div class="task-time">${doneTime}</div>
+            </div>
+          `;
+        });
+        h += `</div></div>`;
       });
-      h += `</div></div>`;
     });
 
     const diaryContent = isToday ? (state.todayDiary || "") : (histRecord ? (histRecord.diary || "") : "");
@@ -810,11 +1002,14 @@ function render() {
     </div>`;
     c.innerHTML = h;
 
-  // --- 🧹 掃除・空き時間（フリー項目追加UI） ---
   } else if (tab === "freetime") {
-    const cleanCat = state.categories.find(c => c.id === "cleaning");
+    let cleanGroup = null;
+    (state.majors || []).forEach(m => {
+      const g = (m.groups || []).find(x => x.id === "cleaning");
+      if (g) cleanGroup = g;
+    });
+
     let h = `<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">🧹 掃除・空き時間タスク</h2>`;
-    
     h += `
       <div class="status-card" style="margin-bottom:14px; padding:14px;">
         <div style="font-size:1rem; font-weight:800; margin-bottom:6px;">➕ 新しい項目をすぐ追加</div>
@@ -825,16 +1020,16 @@ function render() {
       </div>
     `;
 
-    if (cleanCat) {
+    if (cleanGroup) {
       h += `
         <div class="category-group">
           <div class="category-header">
-            <span>${cleanCat.name}</span>
-            <button class="batch-btn" onclick="batchComplete('${cleanCat.id}')">まとめて完了</button>
+            <span>${cleanGroup.name}</span>
+            <button class="batch-btn" onclick="batchComplete('${cleanGroup.id}')">まとめて完了</button>
           </div>
           <div class="task-grid-container">
       `;
-      cleanCat.tasks.forEach(t => {
+      cleanGroup.tasks.forEach(t => {
         const isDone = !!state.todayLog[t.id];
         h += `
           <div class="task-item ${isDone ? 'checked' : ''}" onclick="toggleTask('${t.id}')">
@@ -853,7 +1048,6 @@ function render() {
     }
     c.innerHTML = h;
 
-  // --- 💡 たまに ---
   } else if (tab === "occasional") {
     let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">💡 たまにやるタスク</h2>';
     const now = new Date(getTodayString());
@@ -894,7 +1088,6 @@ function render() {
     });
     c.innerHTML = h;
 
-  // --- 🔄 定期 ---
   } else if (tab === "routine") {
     let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">🔄 定期メンテナンス</h2>';
     const now = new Date(getTodayString());
@@ -963,29 +1156,73 @@ function render() {
       `;
     });
     c.innerHTML = h;
-
-  // --- 📋 全部 ---
   } else if (tab === "all") {
-    let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">📋 毎日のタスク</h2>';
-    state.categories.forEach(cat => {
-      h += `<div class="category-group"><div class="category-header"><span>${cat.name}</span></div><div class="task-grid-container">`;
-      cat.tasks.forEach(t => {
-        h += `<div class="task-item" style="cursor:default;"><div class="task-title">${t.title}</div><button class="action-btn undo" style="color:#ff4757;" onclick="deleteDailyTask('${cat.id}', '${t.id}')">削除</button></div>`;
+    let h = '<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">📋 タスクの管理・並べ替え</h2>';
+    h += `<div style="font-size:0.95rem; color:var(--text-sub); margin-bottom:14px;">▲/▼で順番入れ替え、✏️で名前変更、📝でメモ編集ができます。</div>`;
+
+    (state.majors || []).forEach(major => {
+      (major.groups || []).forEach(group => {
+        h += `
+          <div class="category-group">
+            <div class="category-header">
+              <span>${group.name}</span>
+              <div style="display:flex; gap:6px;">
+                <button class="action-btn undo" style="padding:4px 8px; font-size:0.85rem;" onclick="renameGroup('${group.id}')">✏️</button>
+                <button class="batch-btn" onclick="addTaskToGroup('${group.id}')">＋追加</button>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column;">
+        `;
+
+        group.tasks.forEach((t, idx) => {
+          const isFirst = idx === 0;
+          const isLast = idx === group.tasks.length - 1;
+          h += `
+            <div class="edit-task-row">
+              <div style="flex:1; min-width:0;">
+                <div style="font-weight:800; font-size:1.08rem; word-break:break-all;">${t.title}</div>
+                ${t.memo ? `<div style="font-size:0.85rem; color:var(--text-sub); margin-top:2px;">💬 ${t.memo}</div>` : ''}
+              </div>
+              <div class="edit-task-actions">
+                <button class="order-btn" ${isFirst ? 'disabled style="opacity:0.3;"' : ''} onclick="moveTaskOrder('${group.id}', '${t.id}', -1)">▲</button>
+                <button class="order-btn" ${isLast ? 'disabled style="opacity:0.3;"' : ''} onclick="moveTaskOrder('${group.id}', '${t.id}', 1)">▼</button>
+                <button class="action-btn undo" style="padding:6px 8px; font-size:0.85rem;" onclick="renameTask('${t.id}')">✏️</button>
+                <button class="action-btn undo" style="padding:6px 8px; font-size:0.85rem;" onclick="editTaskMemo('${t.id}')">📝</button>
+                <button class="action-btn undo" style="padding:6px 8px; font-size:0.85rem; color:#ff4757;" onclick="deleteHierarchicalTask('${group.id}', '${t.id}')">🗑️</button>
+              </div>
+            </div>
+          `;
+        });
+        h += `</div></div>`;
       });
-      h += `</div></div>`;
     });
     c.innerHTML = h;
 
-  // --- ➕ 追加 ---
   } else if (tab === "add") {
-    c.innerHTML = `<h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">➕ タスク追加</h2>
-      <div class="status-card">
-        <div class="form-group"><label class="form-label">タスク名</label><input type="text" id="add-title" class="form-control" placeholder="例: 充電する"></div>
-        <div class="form-group"><label class="form-label">カテゴリ</label><select id="add-cat" class="form-control">${state.categories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('')}</select></div>
-        <button class="submit-btn" onclick="addNewDailyTask()">追加する</button>
-      </div>`;
+    let groupOptions = "";
+    (state.majors || []).forEach(m => (m.groups || []).forEach(g => {
+      groupOptions += `<option value="${g.id}">${g.name}</option>`;
+    }));
 
-  // --- 📊 履歴 ---
+    c.innerHTML = `
+      <h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">➕ タスク追加</h2>
+      <div class="status-card">
+        <div class="form-group">
+          <label class="form-label">タスク名</label>
+          <input type="text" id="add-title" class="form-control" placeholder="例: 髪のトリートメント">
+        </div>
+        <div class="form-group">
+          <label class="form-label">メモ（省略可）</label>
+          <input type="text" id="add-memo" class="form-control" placeholder="例: 週に2回やる、など">
+        </div>
+        <div class="form-group">
+          <label class="form-label">追加先カテゴリ</label>
+          <select id="add-group" class="form-control">${groupOptions}</select>
+        </div>
+        <button class="submit-btn" onclick="addNewDailyTask()">追加する</button>
+      </div>
+    `;
+
   } else if (tab === "history") {
     const wStats = getStatsSummary(7);
     const mStats = getStatsSummary(30);
@@ -1063,38 +1300,21 @@ function render() {
           });
         }
 
-        h += `
-            </div>
-          </div>
-        `;
+        h += `</div></div>`;
       });
     }
     c.innerHTML = h;
 
-  // --- ⚙️ 設定 ---
   } else if (tab === "settings") {
     c.innerHTML = `
       <h2 style="font-size:1.4rem; font-weight:900; margin-bottom:14px;">⚙️ 設定</h2>
       
       <div class="status-card">
         <h3 style="font-size:1.15rem; margin-bottom:10px;">📊 Googleスプレッドシート連携</h3>
-        <p style="font-size:0.95rem; color:var(--text-sub); margin-bottom:12px; line-height:1.4;">
-          同日・同タスクは重複せず最新データに自動上書き更新されます。
+        <p style="font-size:0.95rem; color:var(--text-sub); margin-bottom:16px; line-height:1.5;">
+          タスク完了時や日付変更時に、設定されたスプレッドシートへ自動で上書き同期されます。
         </p>
-        <input type="text" id="gas-url-input" class="form-control" placeholder="https://script.google.com/macros/s/.../exec" value="${localStorage.getItem("GAS_WEBAPP_URL") || ""}" style="margin-bottom:10px;">
-        <button class="submit-btn" style="margin-bottom:10px;" onclick="saveGasUrl()">URLを保存</button>
-        <button class="submit-btn" style="background:var(--primary);" onclick="syncToSpreadsheet()">今すぐ手動で送信 📤</button>
-      </div>
-
-      <div class="status-card" style="margin-top:16px;">
-        <h3 style="font-size:1.15rem; margin-bottom:10px;">💾 データのバックアップ・復元</h3>
-        <p style="font-size:0.95rem; color:var(--text-sub); margin-bottom:12px; line-height:1.4;">
-          現在の全タスク履歴やメモをファイル保存、またはテキスト貼り付けで復元できます。
-        </p>
-        <button class="submit-btn" style="background:#2ed573; margin-bottom:14px;" onclick="exportData()">📁 データを保存（エクスポート）</button>
-        
-        <textarea id="import-text-area" class="form-control" rows="3" placeholder="バックアップしたJSONテキストをここに貼り付け..." style="font-size:0.85rem; margin-bottom:8px;"></textarea>
-        <button class="submit-btn" style="background:#1e90ff;" onclick="importData()">📥 データを復元（インポート）</button>
+        <button class="submit-btn" style="background:#1e90ff; padding:14px;" onclick="loadFromSpreadsheet()">スプレッドシートからデータを読み込む 📥</button>
       </div>
     `;
   }
