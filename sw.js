@@ -1,4 +1,5 @@
-﻿const CACHE_NAME = 'life-os-v3';
+﻿// 1行目を v4 に変更
+const CACHE_NAME = 'life-os-v4';
 
 self.addEventListener('install', event => {
   event.waitUntil(
