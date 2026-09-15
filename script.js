@@ -1,5 +1,5 @@
 const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbzZjKeZLlq6VBQpUiFLAcHf_92mU2e5OkqSRtYk26uvKLVZmagRKYggdJa5DTBrr8iZ/exec";
-const STORAGE_KEY = "LIFE_OS_DATA_V54_SAFE";
+const STORAGE_KEY = "LIFE_OS_DATA_V55_DATE_FIXED";
 
 const DEFAULT_HIERARCHY = [
   {
@@ -757,6 +757,7 @@ window.silentSyncToSpreadsheet = async function() {
   } catch(e) {}
 };
 
+// 🌟 どんな日付形式でも「YYYY-MM-DD」に変換して綺麗に復元
 window.loadFromSpreadsheet = async function() {
   const url = DEFAULT_GAS_URL;
   if (!url) return alert("URLが設定されていません。");
@@ -765,6 +766,7 @@ window.loadFromSpreadsheet = async function() {
     const res = await fetch(url);
     const json = await res.json();
     if (json.status !== "success" || !json.rows) return alert("読み込みに失敗しました。");
+    
     const todayStr = getTodayString();
     let loadedCount = 0;
     const taskMap = {};
@@ -772,11 +774,26 @@ window.loadFromSpreadsheet = async function() {
       taskMap[`[${t.majorName} > ${t.groupName}] ${t.title}`] = t.id;
       taskMap[t.title] = t.id;
     });
+    
     if (!state.todayLog) state.todayLog = {};
-    if (!state.history) state.history = {};
+    state.history = {};
+
+    const normalizeDateStr = (rawDate) => {
+      if (!rawDate) return "";
+      const d = new Date(rawDate);
+      if (isNaN(d.getTime())) {
+        return String(rawDate).split("T")[0];
+      }
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    };
 
     json.rows.forEach(r => {
-      const d = r.date;
+      const d = normalizeDateStr(r.date);
+      if (!d) return;
+
       if (r.type === "今日のタスク") {
         const taskId = taskMap[r.title];
         if (d === todayStr && taskId) { state.todayLog[taskId] = r.detail; loadedCount++; }
@@ -790,6 +807,7 @@ window.loadFromSpreadsheet = async function() {
         state.history[d].diary = r.detail;
       }
     });
+
     Object.keys(state.history).forEach(dk => { state.history[dk].done = state.history[dk].tasks.length; });
     saveState(); render(); alert(`スプレッドシートから読み込みました！（本日分: ${loadedCount}件復元）`);
   } catch(e) {
